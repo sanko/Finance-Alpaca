@@ -7,21 +7,14 @@ package Finance::Alpaca::Struct::Calendar 1.00 {
     use Types::Standard qw[ArrayRef Dict Int Ref Str];
     use Types::TypeTiny 0.004 StringLike => { -as => "Stringable" };
     class_type Calendar, { class => __PACKAGE__ };
-    coerce( Calendar, from ArrayRef() => __PACKAGE__ . q[->new(days => $_)] );
+    coerce( Calendar, from Ref() => __PACKAGE__ . q[->new($_)] );
     #
     use Moo;
     use lib './lib';
     use Finance::Alpaca::Types;
 
-    has days => (
-        is  => 'ro',
-        isa => ArrayRef [
-            Dict [
-                date => Str, open => Str, close => Str, session_close => Int, session_open => Int
-            ]
-        ],
-        required => 1
-    );
+    has [qw[date open close session_open session_close]] =>
+        ( is => 'ro', isa => Str, required => 1 );
 }
 1;
 __END__
@@ -30,7 +23,7 @@ __END__
 
 =head1 NAME
 
-Finance::Alpaca::Struct::Calendar - A Single Calendar Object
+Finance::Alpaca::Struct::Calendar - A Single Calendar Date Object
 
 =head1 SYNOPSIS
 
@@ -46,7 +39,7 @@ and close times for the market days, taking into account early closures.
 
 =head1 Properties
 
-A calendar contains a list of C<days( )> and each day contains the following:
+A calendar day contains the following properties:
 
 =over
 

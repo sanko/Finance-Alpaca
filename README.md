@@ -48,7 +48,7 @@ close.
 
 ## `calendar( [...] )`
 
-Returns a Finance::Robinhood::Struct::Calendar object.
+Returns a list of Finance::Alpaca::Struct::Calendar objects.
 
 The calendar endpoint serves the full list of market days from 1970 to 2029.
 

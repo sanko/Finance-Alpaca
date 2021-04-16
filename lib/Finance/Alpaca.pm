@@ -9,7 +9,7 @@ package Finance::Alpaca 1.00 {
     use lib './lib/';
     use Finance::Alpaca::Struct::Account qw[to_Account];
     use Finance::Alpaca::Struct::Clock qw[to_Clock];
-    use Finance::Alpaca::Struct::Calendar qw[to_Calendar];
+    use Finance::Alpaca::Struct::Calendar qw[to_Calendar Calendar];
     #
     has ua => ( is => 'lazy', isa => InstanceOf ['Mojo::UserAgent'] );
 
@@ -42,12 +42,14 @@ package Finance::Alpaca 1.00 {
     sub calendar ( $s, %params ) {
         my $params = '';
         $params .= '?' . join '&', map {
-            $_ . '=' .
-                ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
+            $_ . '='
+                . ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
         } keys %params if keys %params;
         my $tx = $s->ua->build_tx( GET => $s->endpoint . '/v2/calendar' . $params );
         $tx = $s->ua->start($tx);
-        return to_Calendar( $tx->result->json );
+        return ( ArrayRef [Calendar] )->assert_coerce( $tx->result->json );
+    }
+
     }
 };
 1;
@@ -104,7 +106,7 @@ close.
 
 =head2 C<calendar( [...] )>
 
-Returns a Finance::Robinhood::Struct::Calendar object.
+Returns a list of Finance::Alpaca::Struct::Calendar objects.
 
 The calendar endpoint serves the full list of market days from 1970 to 2029.
 
