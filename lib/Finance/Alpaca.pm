@@ -8,6 +8,7 @@ package Finance::Alpaca 1.00 {
     #
     use lib './lib/';
     use Finance::Alpaca::Struct::Account qw[to_Account];
+    use Finance::Alpaca::Struct::Asset qw[to_Asset Asset];
     use Finance::Alpaca::Struct::Clock qw[to_Clock];
     use Finance::Alpaca::Struct::Calendar qw[to_Calendar Calendar];
     #
@@ -50,6 +51,19 @@ package Finance::Alpaca 1.00 {
         return ( ArrayRef [Calendar] )->assert_coerce( $tx->result->json );
     }
 
+    sub assets ( $s, %params ) {
+        my $params = '';
+        $params .= '?' . join '&', map {
+            $_ . '='
+                . ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
+        } keys %params if keys %params;
+        return ( ArrayRef [Asset] )
+            ->assert_coerce( $s->ua->get( $s->endpoint . '/v2/assets' . $params )->result->json );
+    }
+
+    sub asset ( $s, $symbol_or_asset_id ) {
+        my $res = $s->ua->get( $s->endpoint . '/v2/assets/' . $symbol_or_asset_id )->result;
+        return $res->is_error ? () : to_Asset( $res->json );
     }
 };
 1;
@@ -122,6 +136,33 @@ The following parameters are accepted:
 
 Both listed parameters are optional. If neither is provided, the calendar will
 begin on January 1st, 1970.
+
+=head2 C<assets( [...] )>
+
+Returns a list of Finance::Alpaca::Struct::Asset objects.
+
+The assets endpoint serves as the master list of assets available for trade and
+data consumption from Alpaca.
+
+The following parameters are accepted:
+
+=over
+
+=item C<status> - e.g. C<active>. By default, all statuses are included
+
+=item C<asset_class> - Defaults to C<us_equity>
+
+=back
+
+=head2 C<asset( ... )>
+
+    my $msft = $camelid->asset('MSFT');
+    my $spy  = $camelid->asset('b28f4066-5c6d-479b-a2af-85dc1a8f16fb');
+
+Returns a Finance::Alpaca::Struct::Asset object.
+
+You may use either the asset's C<id> (UUID) or C<symbol>. If the asset is not
+found, an empty list is retured.
 
 =head1 LICENSE
 

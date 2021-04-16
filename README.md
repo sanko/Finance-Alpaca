@@ -60,6 +60,28 @@ The following parameters are accepted:
 Both listed parameters are optional. If neither is provided, the calendar will
 begin on January 1st, 1970.
 
+## `assets( [...] )`
+
+Returns a list of Finance::Alpaca::Struct::Asset objects.
+
+The assets endpoint serves as the master list of assets available for trade and
+data consumption from Alpaca.
+
+The following parameters are accepted:
+
+- `status` - e.g. `active`. By default, all statuses are included
+- `asset_class` - Defaults to `us_equity`
+
+## `asset( ... )`
+
+    my $msft = $camelid->asset('MSFT');
+    my $spy  = $camelid->asset('b28f4066-5c6d-479b-a2af-85dc1a8f16fb');
+
+Returns a Finance::Alpaca::Struct::Asset object.
+
+You may use either the asset's `id` (UUID) or `symbol`. If the asset is not
+found, an empty list is retured.
+
 # LICENSE
 
 Copyright (C) Sanko Robinson.
