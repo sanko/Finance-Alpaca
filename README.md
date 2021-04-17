@@ -82,6 +82,34 @@ Returns a Finance::Alpaca::Struct::Asset object.
 You may use either the asset's `id` (UUID) or `symbol`. If the asset is not
 found, an empty list is retured.
 
+## `bars( ... )`
+
+    my $bars = $al->bars(
+        symbol    => 'MSFT',
+        timeframe => '1Min',
+        start     => Time::Moment->now->with_day_of_week(2),
+        end       => Time::Moment->now->with_hour(12)->with_day_of_week(3)
+    );
+
+Returns a list of Finance::Alpaca::Struct::Bar objects along with other data.
+
+The bar endpoint serves aggregate historical data for the requested securities.
+
+The following parameters are accepted:
+
+- `symbol` - The symbol to query for; this is required
+- `start` - Filter data equal to or before this time in RFC-3339 format or a Time::Moment object. Fractions of a second are not accepted; this is required
+- `end` - Filter data equal to or before this time in RFC-3339 format or a Time::Moment object. Fractions of a second are not accepted; this is required
+- `limit` - Number of data points to return. Must be in range `1-10000`, defaults to `1000`
+- `page_token` - Pagination token to contine from
+- `timeframe` - Timeframe for the aggregation. Available values are: `1Min`, `1Hour`, and `1Day`; this is required
+
+The data returned includes the following data:
+
+- `bars` - List of Finance::Alpaca::Struct::Bar objects
+- `next_page_token` - Token that can be used to query the next page
+- `symbol` - Symbol that was queried
+
 # LICENSE
 
 Copyright (C) Sanko Robinson.
