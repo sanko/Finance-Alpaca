@@ -49,8 +49,8 @@ package Finance::Alpaca 1.00 {
     sub calendar ( $s, %params ) {
         my $params = '';
         $params .= '?' . join '&', map {
-            $_ . '=' .
-                ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
+            $_ . '='
+                . ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
         } keys %params if keys %params;
         my $tx = $s->ua->build_tx( GET => $s->endpoint . '/v2/calendar' . $params );
         $tx = $s->ua->start($tx);
@@ -60,8 +60,8 @@ package Finance::Alpaca 1.00 {
     sub assets ( $s, %params ) {
         my $params = '';
         $params .= '?' . join '&', map {
-            $_ . '=' .
-                ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
+            $_ . '='
+                . ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
         } keys %params if keys %params;
         return ( ArrayRef [Asset] )
             ->assert_coerce( $s->ua->get( $s->endpoint . '/v2/assets' . $params )->result->json );
@@ -76,13 +76,15 @@ package Finance::Alpaca 1.00 {
         my $symbol = delete $params{symbol};
         my $params = '';
         $params .= '?' . join '&', map {
-            $_ . '=' .
-                ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
+            $_ . '='
+                . ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
         } keys %params if keys %params;
         return ( Dict [ bars => ArrayRef [Bar], symbol => Str, next_page_token => Maybe [Str] ] )
             ->assert_coerce(
-            $s->ua->get( sprintf 'https://data.alpaca.markets/v%d/stocks/%s/bars%s',
-                $s->api_version, $symbol, $params )->result->json
+            $s->ua->get(
+                sprintf 'https://data.alpaca.markets/v%d/stocks/%s/bars%s',
+                $s->api_version, $symbol, $params
+            )->result->json
             );
     }
 };
@@ -105,7 +107,7 @@ Finance::Alpaca is ... still under construction.
 
 =head1 METHODS
 
-=head2 C<new( keys => [...] )>
+=head2 C<new( ... )>
 
     my $camelid = Finance::Alpaca->new(
         keys => [ 'MDJOHHAE5BDE2FAYAEQT',
@@ -114,8 +116,23 @@ Finance::Alpaca is ... still under construction.
 
 Creates a new Finance::Alpaca object.
 
-Every API call requires authentication. API keys can be acquired in the
-developer web console.
+This constructor accepts the following parameters:
+
+=over
+
+=item C<keys> - C<[ $APCA_API_KEY_ID, $APCA_API_SECRET_KEY ]>
+
+Every API call requires authentication. You must provide these keys which may
+be acquired in the developer web console and are only visible on creation.
+
+=item C<paper> - Boolean value
+
+If you're attempting to use Alpaca's paper trading functionality, this must be
+a true value. Otherwise, you will be making live trades with actual assets.
+
+This is an untrue value by default.
+
+=back
 
 =head2 C<account( )>
 

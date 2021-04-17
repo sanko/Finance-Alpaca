@@ -13,7 +13,7 @@ Finance::Alpaca is ... still under construction.
 
 # METHODS
 
-## `new( keys =` \[...\] )>
+## `new( ... )`
 
     my $camelid = Finance::Alpaca->new(
         keys => [ 'MDJOHHAE5BDE2FAYAEQT',
@@ -22,8 +22,19 @@ Finance::Alpaca is ... still under construction.
 
 Creates a new Finance::Alpaca object.
 
-Every API call requires authentication. API keys can be acquired in the
-developer web console.
+This constructor accepts the following parameters:
+
+- `keys` - `[ $APCA_API_KEY_ID, $APCA_API_SECRET_KEY ]`
+
+    Every API call requires authentication. You must provide these keys which may
+    be acquired in the developer web console and are only visible on creation.
+
+- `paper` - Boolean value
+
+    If you're attempting to use Alpaca's paper trading functionality, this must be
+    a true value. Otherwise, you will be making live trades with actual assets.
+
+    This is an untrue value by default.
 
 ## `account( )`
 
