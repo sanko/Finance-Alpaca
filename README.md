@@ -148,6 +148,33 @@ The data returned includes the following data:
 - `next_page_token` - Token that can be used to query the next page
 - `symbol` - Symbol that was queried
 
+## `trades( ... )`
+
+    my $trades = $camelid->trades(
+        symbol    => 'MSFT',
+        start     => Time::Moment->now->with_day_of_week(2),
+        end       => Time::Moment->now->with_hour(12)->with_day_of_week(3)
+    );
+
+Returns a list of Finance::Alpaca::Struct::Trade objects along with other data.
+
+The bar endpoint serves  historcial trade data for a given ticker symbol on a
+specified date.
+
+The following parameters are accepted:
+
+- `symbol` - The symbol to query for; this is required
+- `start` - Filter data equal to or before this time in RFC-3339 format or a Time::Moment object. Fractions of a second are not accepted; this is required
+- `end` - Filter data equal to or before this time in RFC-3339 format or a Time::Moment object. Fractions of a second are not accepted; this is required
+- `limit` - Number of data points to return. Must be in range `1-10000`, defaults to `1000`
+- `page_token` - Pagination token to contine from
+
+The data returned includes the following data:
+
+- `trades` - List of Finance::Alpaca::Struct::Quote objects
+- `next_page_token` - Token that can be used to query the next page
+- `symbol` - Symbol that was queried
+
 # LICENSE
 
 Copyright (C) Sanko Robinson.

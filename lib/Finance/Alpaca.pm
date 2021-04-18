@@ -12,6 +12,7 @@ package Finance::Alpaca 1.00 {
     use Finance::Alpaca::Struct::Bar qw[Bar];
     use Finance::Alpaca::Struct::Clock qw[to_Clock];
     use Finance::Alpaca::Struct::Calendar qw[to_Calendar Calendar];
+    use Finance::Alpaca::Struct::Trade qw[Trade];
     use Finance::Alpaca::Struct::Quote qw[Quote];
 
     #
@@ -103,6 +104,25 @@ package Finance::Alpaca 1.00 {
             ->assert_coerce(
             $s->ua->get(
                 sprintf 'https://data.alpaca.markets/v%d/stocks/%s/quotes%s',
+                $s->api_version, $symbol, $params
+                )->result->json
+
+            );
+    }
+
+    sub trades ( $s, %params ) {
+        my $symbol = delete $params{symbol};
+        my $params = '';
+        $params .= '?' . join '&', map {
+            $_ . '='
+                . ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
+        } keys %params if keys %params;
+
+        return (
+            Dict [ trades => ArrayRef [Trade], symbol => Str, next_page_token => Maybe [Str] ] )
+            ->assert_coerce(
+            $s->ua->get(
+                sprintf 'https://data.alpaca.markets/v%d/stocks/%s/trades%s',
                 $s->api_version, $symbol, $params
                 )->result->json
 
@@ -306,6 +326,46 @@ The data returned includes the following data:
 
 =back
 
+=head2 C<trades( ... )>
+
+    my $trades = $camelid->trades(
+        symbol    => 'MSFT',
+        start     => Time::Moment->now->with_day_of_week(2),
+        end       => Time::Moment->now->with_hour(12)->with_day_of_week(3)
+    );
+
+Returns a list of Finance::Alpaca::Struct::Trade objects along with other data.
+
+The bar endpoint serves  historcial trade data for a given ticker symbol on a
+specified date.
+
+The following parameters are accepted:
+
+=over
+
+=item C<symbol> - The symbol to query for; this is required
+
+=item C<start> - Filter data equal to or before this time in RFC-3339 format or a Time::Moment object. Fractions of a second are not accepted; this is required
+
+=item C<end> - Filter data equal to or before this time in RFC-3339 format or a Time::Moment object. Fractions of a second are not accepted; this is required
+
+=item C<limit> - Number of data points to return. Must be in range C<1-10000>, defaults to C<1000>
+
+=item C<page_token> - Pagination token to contine from
+
+=back
+
+The data returned includes the following data:
+
+=over
+
+=item C<trades> - List of Finance::Alpaca::Struct::Quote objects
+
+=item C<next_page_token> - Token that can be used to query the next page
+
+=item C<symbol> - Symbol that was queried
+
+=back
 
 =head1 LICENSE
 
