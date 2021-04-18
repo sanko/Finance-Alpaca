@@ -95,7 +95,7 @@ found, an empty list is retured.
 
 ## `bars( ... )`
 
-    my $bars = $al->bars(
+    my $bars = $camelid->bars(
         symbol    => 'MSFT',
         timeframe => '1Min',
         start     => Time::Moment->now->with_day_of_week(2),
@@ -118,6 +118,33 @@ The following parameters are accepted:
 The data returned includes the following data:
 
 - `bars` - List of Finance::Alpaca::Struct::Bar objects
+- `next_page_token` - Token that can be used to query the next page
+- `symbol` - Symbol that was queried
+
+## `quotes( ... )`
+
+    my $quotes = $camelid->quotes(
+        symbol    => 'MSFT',
+        start     => Time::Moment->now->with_day_of_week(2),
+        end       => Time::Moment->now->with_hour(12)->with_day_of_week(3)
+    );
+
+Returns a list of Finance::Alpaca::Struct::Quote objects along with other data.
+
+The bar endpoint serves quote (NBBO) historical data for the requested
+security.
+
+The following parameters are accepted:
+
+- `symbol` - The symbol to query for; this is required
+- `start` - Filter data equal to or before this time in RFC-3339 format or a Time::Moment object. Fractions of a second are not accepted; this is required
+- `end` - Filter data equal to or before this time in RFC-3339 format or a Time::Moment object. Fractions of a second are not accepted; this is required
+- `limit` - Number of data points to return. Must be in range `1-10000`, defaults to `1000`
+- `page_token` - Pagination token to contine from
+
+The data returned includes the following data:
+
+- `quotes` - List of Finance::Alpaca::Struct::Quote objects
 - `next_page_token` - Token that can be used to query the next page
 - `symbol` - Symbol that was queried
 
