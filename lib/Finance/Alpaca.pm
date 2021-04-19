@@ -9,12 +9,12 @@ package Finance::Alpaca 1.00 {
     use lib './lib/';
     use Finance::Alpaca::Struct::Account qw[to_Account];
     use Finance::Alpaca::Struct::Asset qw[to_Asset Asset];
-    use Finance::Alpaca::Struct::Bar qw[Bar];
-    use Finance::Alpaca::Struct::Clock qw[to_Clock];
+    use Finance::Alpaca::Struct::Bar qw[to_Bar Bar];
     use Finance::Alpaca::Struct::Calendar qw[to_Calendar Calendar];
-    use Finance::Alpaca::Struct::Trade qw[Trade];
-    use Finance::Alpaca::Struct::Quote qw[Quote];
-
+    use Finance::Alpaca::Struct::Clock qw[to_Clock];
+    use Finance::Alpaca::Struct::Quote qw[to_Quote Quote];
+    use Finance::Alpaca::Stream;
+    use Finance::Alpaca::Struct::Trade qw[to_Trade Trade];
     #
     has ua => ( is => 'lazy', isa => InstanceOf ['Mojo::UserAgent'] );
 
@@ -98,15 +98,13 @@ package Finance::Alpaca 1.00 {
             $_ . '='
                 . ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
         } keys %params if keys %params;
-
         return (
             Dict [ quotes => ArrayRef [Quote], symbol => Str, next_page_token => Maybe [Str] ] )
             ->assert_coerce(
             $s->ua->get(
                 sprintf 'https://data.alpaca.markets/v%d/stocks/%s/quotes%s',
                 $s->api_version, $symbol, $params
-                )->result->json
-
+            )->result->json
             );
     }
 
@@ -117,18 +115,30 @@ package Finance::Alpaca 1.00 {
             $_ . '='
                 . ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
         } keys %params if keys %params;
-
         return (
             Dict [ trades => ArrayRef [Trade], symbol => Str, next_page_token => Maybe [Str] ] )
             ->assert_coerce(
             $s->ua->get(
                 sprintf 'https://data.alpaca.markets/v%d/stocks/%s/trades%s',
                 $s->api_version, $symbol, $params
-                )->result->json
-
+            )->result->json
             );
     }
-};
+
+    sub stream ( $s, $cb, %params ) {
+        my $stream = Finance::Alpaca::Stream->new(
+            cb     => $cb,
+            source => delete $params{source} // 'iex'    # iex or sip
+        );
+        $stream->authorize( $s->ua, $s->keys )->catch(
+            sub ($err) {
+                $stream = ();
+                warn "WebSocket error: $err";
+            }
+        )->wait;
+        $stream;
+    }
+}
 1;
 __END__
 
@@ -168,10 +178,10 @@ be acquired in the developer web console and are only visible on creation.
 
 =item C<paper> - Boolean value
 
-If you're attempting to use Alpaca's paper trading functionality, this must be
-a true value. Otherwise, you will be making live trades with actual assets.
+If you're attempting to use Alpaca's paper trading functionality, this B<must>
+be a true value. Otherwise, you will be making live trades with actual assets.
 
-This is an untrue value by default.
+B<Note>: This is a false value by default.
 
 =back
 
@@ -366,6 +376,24 @@ The data returned includes the following data:
 =item C<symbol> - Symbol that was queried
 
 =back
+
+=head2 C<stream( ... )>
+
+    my $stream = $camelid->stream( sub ($packet) {  ... } );
+    $stream->subscribe(
+        trades => ['MSFT']
+    );
+
+Returns a new Finance::Alpaca::Stream object.
+
+You are ready to receive real-time market data!
+
+You can send one or more subscription messages (described in
+Finance::Alpaca::Stream) and after confirmation you will receive the
+corresponding market data.
+
+This method expects a code reference. This callback will recieve all incoming
+data.
 
 =head1 LICENSE
 

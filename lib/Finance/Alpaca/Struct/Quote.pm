@@ -19,6 +19,7 @@ package Finance::Alpaca::Struct::Quote 1.00 {
     has [qw[ap bp]] => ( is => 'ro', isa => Num, required => 1 );
     has [qw[as bs]] => ( is => 'ro', isa => Int, required => 1 );
     has c           => ( is => 'ro', isa => ArrayRef [Str], required => 1 );
+    has S           => ( is => 'ro', isa => Str, predicate => 1 );    # If from stream
 }
 1;
 __END__
@@ -68,6 +69,8 @@ The following properties are contained in the object.
 =item C<bs> - Bid size
 
 =item C<c> - Quote conditions
+
+=item C<S> - Symbol; only provided if data is from a Finance::Alpaca::Stream session
 
 =back
 

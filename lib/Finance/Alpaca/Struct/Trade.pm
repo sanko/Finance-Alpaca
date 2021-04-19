@@ -18,6 +18,7 @@ package Finance::Alpaca::Struct::Trade 1.00 {
     has p         => ( is => 'ro', isa => Num,       required => 1 );
     has [qw[s i]] => ( is => 'ro', isa => Int,       required => 1 );
     has c         => ( is => 'ro', isa => ArrayRef [Str], required => 1 );
+    has S         => ( is => 'ro', isa => Str, predicate => 1 );    # If from stream
 
 }
 1;
@@ -66,6 +67,8 @@ The following properties are contained in the object.
 =item C<i> - Trade ID
 
 =item C<z> - Tape
+
+=item C<S> - Symbol; only provided if data is from a Finance::Alpaca::Stream session
 
 =back
 

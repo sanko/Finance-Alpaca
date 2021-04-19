@@ -31,10 +31,10 @@ This constructor accepts the following parameters:
 
 - `paper` - Boolean value
 
-    If you're attempting to use Alpaca's paper trading functionality, this must be
-    a true value. Otherwise, you will be making live trades with actual assets.
+    If you're attempting to use Alpaca's paper trading functionality, this **must**
+    be a true value. Otherwise, you will be making live trades with actual assets.
 
-    This is an untrue value by default.
+    **Note**: This is a false value by default.
 
 ## `account( )`
 
@@ -174,6 +174,24 @@ The data returned includes the following data:
 - `trades` - List of Finance::Alpaca::Struct::Quote objects
 - `next_page_token` - Token that can be used to query the next page
 - `symbol` - Symbol that was queried
+
+## `stream( ... )`
+
+    my $stream = $camelid->stream( sub ($packet) {  ... } );
+    $stream->subscribe(
+        trades => ['MSFT']
+    );
+
+Returns a new Finance::Alpaca::Stream object.
+
+You are ready to receive real-time market data!
+
+You can send one or more subscription messages (described in
+Finance::Alpaca::Stream) and after confirmation you will receive the
+corresponding market data.
+
+This method expects a code reference. This callback will recieve all incoming
+data.
 
 # LICENSE
 

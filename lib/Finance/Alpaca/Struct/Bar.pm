@@ -13,9 +13,11 @@ package Finance::Alpaca::Struct::Bar 1.00 {
     use Moo;
     use lib './lib';
     use Finance::Alpaca::Types;
-    has t             => ( is => 'ro', isa => Timestamp, required => 1, coerce => 1 );
-    has [qw[o h l c]] => ( is => 'ro', isa => Num,       required => 1 );
-    has v             => ( is => 'ro', isa => Int,       required => 1 );
+    has t             => ( is => 'ro', isa => Timestamp, required  => 1, coerce => 1 );
+    has [qw[o h l c]] => ( is => 'ro', isa => Num,       required  => 1 );
+    has v             => ( is => 'ro', isa => Int,       required  => 1 );
+    has S             => ( is => 'ro', isa => Str,       predicate => 1 );    # If from stream
+
 }
 1;
 __END__
@@ -61,6 +63,8 @@ The following properties are contained in the object.
 =item C<c> - Close price
 
 =item C<v> - Volume
+
+=item C<S> - Symbol; only provided if data is from a Finance::Alpaca::Stream session
 
 =back
 
