@@ -4,7 +4,7 @@ package Finance::Alpaca 1.00 {
     use feature 'signatures';
     no warnings 'experimental::signatures';
     use Mojo::UserAgent;
-    use Types::Standard qw[ArrayRef Bool Dict Enum InstanceOf Maybe Str Int];
+    use Types::Standard qw[ArrayRef Bool Dict Enum InstanceOf Maybe Num Str Int];
     use Types::UUID;
     #
     use lib './lib/';
@@ -18,6 +18,7 @@ package Finance::Alpaca 1.00 {
     use Finance::Alpaca::Struct::Quote qw[to_Quote Quote];
     use Finance::Alpaca::Stream;
     use Finance::Alpaca::Struct::Trade qw[to_Trade Trade];
+    use Finance::Alpaca::Types;
     #
     has ua => ( is => 'lazy', isa => InstanceOf ['Mojo::UserAgent'] );
 
@@ -222,6 +223,28 @@ package Finance::Alpaca 1.00 {
             $s->endpoint . '/v2/positions/' . $symbol_or_asset_id . ( $qty ? '?qty=' . $qty : '' ) )
             ->result;
         return $res->is_error ? () : to_Order( $res->json );
+    }
+
+    sub portfolio_history ( $s, %params ) {
+        $params{extended_hours} = ( !!$params{extended_hours} ) ? 'true' : 'false'
+            if defined $params{extended_hours};
+        $params{date_end}
+            = ref $params{date_end} eq 'Time::Moment'
+            ? $params{date_end}->strftime('%F')
+            : $params{date_end}
+            if defined $params{date_end};
+        my $res = $s->ua->get( $s->endpoint . '/v2/account/portfolio/history' => json => \%params )
+            ->result;
+        return $res->is_error ? $res->json : (
+            Dict [
+                base_value      => Num,
+                equity          => ArrayRef [Num],
+                profit_loss     => ArrayRef [Num],
+                profit_loss_pct => ArrayRef [Num],
+                timeframe       => Str,
+                timestamp       => ArrayRef [Timestamp]
+            ]
+        )->assert_coerce( $res->json );
     }
 }
 1;
@@ -731,6 +754,30 @@ short positions.
 
 This method accepts a second, optional parameter which is the number of shares
 to liquidate.
+
+=head2 C<portfolio_history( [...] )>
+
+    $camelid->portfolio_history( );
+
+The portfolio history API returns the timeseries data for equity and profit
+loss information of the account.
+
+    $camelid->portfolio_history( period => '2W' );
+
+This method accepts the following optional parameters:
+
+=over
+
+=item C<period> - The duration of the data in C<E<lt>numberE<gt> + E<lt>unitE<gt>>, such as 1D, where <unit> can be D for day, C<W> for week, C<M> for month and C<A> for year. Defaults to C<1M>
+
+=item C<timeframe> - The resolution of time window. C<1Min>, C<5Min>, C<15Min>, C<1H>, or C<1D>. If omitted, C<1Min> for less than 7 days period, C<15Min> for less than 30 days, or otherwise C<1D>
+
+=item C<date_end> - The date the data is returned up to, in C<YYYY-MM-DD> format or as a Time::Moment object. Defaults to the current market date (rolls over at the market open if C<extended_hours> is false, otherwise at 7am ET)
+
+=item C<extended_hours> Boolean value; if true, include extended hours in the result. This is effective only for timeframe less than C<1D>.
+
+
+=back
 
 =head1 LICENSE
 

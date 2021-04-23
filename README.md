@@ -385,6 +385,22 @@ short positions.
 This method accepts a second, optional parameter which is the number of shares
 to liquidate.
 
+## `portfolio_history( [...] )`
+
+    $camelid->portfolio_history( );
+
+The portfolio history API returns the timeseries data for equity and profit
+loss information of the account.
+
+    $camelid->portfolio_history( period => '2W' );
+
+This method accepts the following optional parameters:
+
+- `period` - The duration of the data in `<number> + <unit>`, such as 1D, where &lt;unit> can be D for day, `W` for week, `M` for month and `A` for year. Defaults to `1M`
+- `timeframe` - The resolution of time window. `1Min`, `5Min`, `15Min`, `1H`, or `1D`. If omitted, `1Min` for less than 7 days period, `15Min` for less than 30 days, or otherwise `1D`
+- `date_end` - The date the data is returned up to, in `YYYY-MM-DD` format or as a Time::Moment object. Defaults to the current market date (rolls over at the market open if `extended_hours` is false, otherwise at 7am ET)
+- `extended_hours` Boolean value; if true, include extended hours in the result. This is effective only for timeframe less than `1D`.
+
 # LICENSE
 
 Copyright (C) Sanko Robinson.

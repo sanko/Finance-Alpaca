@@ -21,7 +21,7 @@ package Finance::Alpaca::Types 1.00 {
     $dt->coercion->add_type_coercions(
 
         #Undef() => q[Time::Moment->now()],
-        #Int()   => q[Time::Moment->from_epoch($_)],
+        Int() => q[Time::Moment->from_epoch($_)],
         Str() => q[Time::Moment->from_string($_)]
     );
     __PACKAGE__->make_immutable;
