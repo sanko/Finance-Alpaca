@@ -401,6 +401,15 @@ This method accepts the following optional parameters:
 - `date_end` - The date the data is returned up to, in `YYYY-MM-DD` format or as a Time::Moment object. Defaults to the current market date (rolls over at the market open if `extended_hours` is false, otherwise at 7am ET)
 - `extended_hours` Boolean value; if true, include extended hours in the result. This is effective only for timeframe less than `1D`.
 
+The returned data is in a hash ref with the following keys:
+
+- `timestamp` - List of Time::Moment objects; the time of each data element, left-labeled (the beginning of the window)
+- `equity` - List of numbers; equity values of the account in dollar amounts as of the end of each time window
+- `profit_loss` - List of numbers; profit/loss in dollar from the base value
+- `profit_loss_pct` - List of numbers; profit/loss in percentage from the base value
+- `base_value` - basis in dollar of the profit loss calculation
+- `timeframe` - time window size of each data element
+
 # LICENSE
 
 Copyright (C) Sanko Robinson.

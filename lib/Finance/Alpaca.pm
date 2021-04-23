@@ -776,6 +776,23 @@ This method accepts the following optional parameters:
 
 =item C<extended_hours> Boolean value; if true, include extended hours in the result. This is effective only for timeframe less than C<1D>.
 
+=back
+
+The returned data is in a hash ref with the following keys:
+
+=over
+
+=item C<timestamp> - List of Time::Moment objects; the time of each data element, left-labeled (the beginning of the window)
+
+=item C<equity> - List of numbers; equity values of the account in dollar amounts as of the end of each time window
+
+=item C<profit_loss> - List of numbers; profit/loss in dollar from the base value
+
+=item C<profit_loss_pct> - List of numbers; profit/loss in percentage from the base value
+
+=item C<base_value> - basis in dollar of the profit loss calculation
+
+=item C<timeframe> - time window size of each data element
 
 =back
 
