@@ -334,6 +334,57 @@ Attempts to cancel an open order. If the order is no longer cancelable
 reject the request, and an empty list will be returned. Upon acceptance of the
 cancel request, it returns status 204 and a true value.
 
+## `positions( )`
+
+    $camelid->positions( );
+
+Retrieves a list of the account’s open positions and returns a list of
+Finance::Alpaca::Struct::Positon objects.
+
+## `positon( ... )`
+
+    my $elon = $camelid->position( 'TSLA' );
+    my $msft = $camelid->position( 'b6d1aa75-5c9c-4353-a305-9e2caa1925ab' );
+
+Retreves the account's open position for the given symbol or asset ID and
+returns a Finance::Alpaca::Struct::Positoin object if found.
+
+If not found, and empty list is returned.
+
+## `close_all_positions( [...] )`
+
+    my $panic = $camelid->close_all_positions( );
+
+Closes (liquidates) all of the account’s open long and short positions.
+
+    $panic = $camelid->close_all_positions( 1 );
+
+This method accepts one optional parameter which, if true, will cancel all open
+orders before liquidating all positions.
+
+On success, an array of hashes will be returned each with the following
+elements:
+
+- `body` - Finance::Alpaca::Struct::Order object
+- `id` - the order ID (UUID)
+- `status` - HTTP status code for the request
+
+A response will be provided for each position that is attempted to be closed.
+
+## `close_position( ..., [...] )`
+
+    my $order = $camelid->close_position('MSFT');
+    $order    = $camelid->close_position( 'b6d1aa75-5c9c-4353-a305-9e2caa1925ab' );
+
+Closes (liquidates) the account’s open position for the given symbol or asset
+ID and returns a Finance::Alpaca::Struct::Order object. Works for both long and
+short positions.
+
+    my $order = $camelid->close_position('MSFT', 0.5);
+
+This method accepts a second, optional parameter which is the number of shares
+to liquidate.
+
 # LICENSE
 
 Copyright (C) Sanko Robinson.

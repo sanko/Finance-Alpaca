@@ -29,7 +29,7 @@ __END__
 
 =head1 NAME
 
-Finance::Alpaca::Struct::AccAssetount - A Single Account Object
+Finance::Alpaca::Struct::Asset - A Single Account Object
 
 =head1 SYNOPSIS
 

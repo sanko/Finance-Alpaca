@@ -14,6 +14,7 @@ package Finance::Alpaca 1.00 {
     use Finance::Alpaca::Struct::Calendar qw[to_Calendar Calendar];
     use Finance::Alpaca::Struct::Clock qw[to_Clock];
     use Finance::Alpaca::Struct::Order qw[to_Order Order];
+    use Finance::Alpaca::Struct::Position qw[to_Position Position];
     use Finance::Alpaca::Struct::Quote qw[to_Quote Quote];
     use Finance::Alpaca::Stream;
     use Finance::Alpaca::Struct::Trade qw[to_Trade Trade];
@@ -194,6 +195,34 @@ package Finance::Alpaca 1.00 {
         return !$res->is_error;
     }
 
+    sub positions ($s) {
+        return ( ArrayRef [Position] )
+            ->assert_coerce( $s->ua->get( $s->endpoint . '/v2/positions' )->result->json );
+    }
+
+    sub position ( $s, $symbol_or_asset_id ) {
+        my $res = $s->ua->get( $s->endpoint . '/v2/positions/' . $symbol_or_asset_id )->result;
+        return $res->is_error ? () : to_Position( $res->json );
+    }
+
+    sub close_all_positions ( $s, $cancel_orders = !1 ) {
+        my $res
+            = $s->ua->delete(
+            $s->endpoint . '/v2/positions' . ( $cancel_orders ? '?cancel_orders=true' : '' ) )
+            ->result;
+        return $res->is_error
+            ? $res->json
+            : ( ArrayRef [ Dict [ body => Order, id => Uuid, status => Int ] ] )
+            ->assert_coerce( $res->json );
+    }
+
+    sub close_position ( $s, $symbol_or_asset_id, $qty = () ) {
+        my $res
+            = $s->ua->get(
+            $s->endpoint . '/v2/positions/' . $symbol_or_asset_id . ( $qty ? '?qty=' . $qty : '' ) )
+            ->result;
+        return $res->is_error ? () : to_Order( $res->json );
+    }
 }
 1;
 __END__
@@ -645,6 +674,63 @@ Attempts to cancel an open order. If the order is no longer cancelable
 (example: C<status> is C<filled>), the server will respond with status 422,
 reject the request, and an empty list will be returned. Upon acceptance of the
 cancel request, it returns status 204 and a true value.
+
+=head2 C<positions( )>
+
+    $camelid->positions( );
+
+Retrieves a list of the account’s open positions and returns a list of
+Finance::Alpaca::Struct::Positon objects.
+
+=head2 C<positon( ... )>
+
+    my $elon = $camelid->position( 'TSLA' );
+    my $msft = $camelid->position( 'b6d1aa75-5c9c-4353-a305-9e2caa1925ab' );
+
+Retreves the account's open position for the given symbol or asset ID and
+returns a Finance::Alpaca::Struct::Positoin object if found.
+
+If not found, and empty list is returned.
+
+=head2 C<close_all_positions( [...] )>
+
+    my $panic = $camelid->close_all_positions( );
+
+Closes (liquidates) all of the account’s open long and short positions.
+
+    $panic = $camelid->close_all_positions( 1 );
+
+This method accepts one optional parameter which, if true, will cancel all open
+orders before liquidating all positions.
+
+On success, an array of hashes will be returned each with the following
+elements:
+
+=over
+
+=item C<body> - Finance::Alpaca::Struct::Order object
+
+=item C<id> - the order ID (UUID)
+
+=item C<status> - HTTP status code for the request
+
+=back
+
+A response will be provided for each position that is attempted to be closed.
+
+=head2 C<close_position( ..., [...] )>
+
+    my $order = $camelid->close_position('MSFT');
+    $order    = $camelid->close_position( 'b6d1aa75-5c9c-4353-a305-9e2caa1925ab' );
+
+Closes (liquidates) the account’s open position for the given symbol or asset
+ID and returns a Finance::Alpaca::Struct::Order object. Works for both long and
+short positions.
+
+    my $order = $camelid->close_position('MSFT', 0.5);
+
+This method accepts a second, optional parameter which is the number of shares
+to liquidate.
 
 =head1 LICENSE
 
