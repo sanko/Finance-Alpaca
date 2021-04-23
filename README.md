@@ -212,6 +212,20 @@ The following parameters are accepted:
 - `nested` - Boolean value indicating whether the result will roll up multi-leg orders under the `legs( )` field of the primary order.
 - `symbols` - A comma-separated list of symbols to filter by (ex. `AAPL,TSLA,MSFT`).
 
+## `order( ..., [...] )`
+
+    my $order = $camelid->order('0f43d12c-8f13-4bff-8597-c665b66bace4');
+
+Returns a Finance::Alpaca::Struct::Order object.
+
+You must provide the order's `id` (UUID). If the order is not found, an empty
+list is retured.
+
+You may also provide a boolean value; if true, the result will roll up
+multi-leg orders unter the `legs( )` field in primary order.
+
+    my $order = $camelid->order('0f43d12c-8f13-4bff-8597-c665b66bace4', 1);
+
 # LICENSE
 
 Copyright (C) Sanko Robinson.

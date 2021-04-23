@@ -152,6 +152,12 @@ package Finance::Alpaca 1.00 {
         return ( ArrayRef [Order] )
             ->assert_coerce( $s->ua->get( $s->endpoint . '/v2/orders' . $params )->result->json );
     }
+
+    sub order ( $s, $order_id, $nested = 0 ) {
+        my $res = $s->ua->get(
+            $s->endpoint . '/v2/orders/' . $order_id . ( $nested ? '?nested=1' : '' ) )->result;
+        return $res->is_error ? () : to_Order( $res->json );
+    }
 }
 1;
 __END__
@@ -435,9 +441,22 @@ The following parameters are accepted:
 =item C<nested> - Boolean value indicating whether the result will roll up multi-leg orders under the C<legs( )> field of the primary order.
 
 =item C<symbols> - A comma-separated list of symbols to filter by (ex. C<AAPL,TSLA,MSFT>).
- 
+
 =back
 
+=head2 C<order( ..., [...] )>
+
+    my $order = $camelid->order('0f43d12c-8f13-4bff-8597-c665b66bace4');
+
+Returns a Finance::Alpaca::Struct::Order object.
+
+You must provide the order's C<id> (UUID). If the order is not found, an empty
+list is retured.
+
+You may also provide a boolean value; if true, the result will roll up
+multi-leg orders unter the C<legs( )> field in primary order.
+
+    my $order = $camelid->order('0f43d12c-8f13-4bff-8597-c665b66bace4', 1);
 
 =head1 LICENSE
 
