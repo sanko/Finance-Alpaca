@@ -12,6 +12,7 @@ package Finance::Alpaca 1.00 {
     use Finance::Alpaca::Struct::Bar qw[to_Bar Bar];
     use Finance::Alpaca::Struct::Calendar qw[to_Calendar Calendar];
     use Finance::Alpaca::Struct::Clock qw[to_Clock];
+    use Finance::Alpaca::Struct::Order qw[to_Order Order];
     use Finance::Alpaca::Struct::Quote qw[to_Quote Quote];
     use Finance::Alpaca::Stream;
     use Finance::Alpaca::Struct::Trade qw[to_Trade Trade];
@@ -20,9 +21,12 @@ package Finance::Alpaca 1.00 {
 
     sub _build_ua ($s) {
         my $ua = Mojo::UserAgent->new;
+        $ua->transactor->name(
+            sprintf 'Finance::Alpaca %f (Perl %s)',
+            $Finance::Alpaca::VERSION, $^V
+        );
         $ua->on(
             start => sub ( $ua, $tx ) {
-                $tx->req->headers->header( 'X-Bender'            => 'Bite my shiny metal ass!' );
                 $tx->req->headers->header( 'APCA-API-KEY-ID'     => $s->keys->[0] ) if $s->has_keys;
                 $tx->req->headers->header( 'APCA-API-SECRET-KEY' => $s->keys->[1] ) if $s->has_keys;
             }
@@ -137,6 +141,16 @@ package Finance::Alpaca 1.00 {
             }
         )->wait;
         $stream;
+    }
+
+    sub orders ( $s, %params ) {
+        my $params = '';
+        $params .= '?' . join '&', map {
+            $_ . '='
+                . ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
+        } keys %params if keys %params;
+        return ( ArrayRef [Order] )
+            ->assert_coerce( $s->ua->get( $s->endpoint . '/v2/orders' . $params )->result->json );
     }
 }
 1;
@@ -394,6 +408,36 @@ corresponding market data.
 
 This method expects a code reference. This callback will recieve all incoming
 data.
+
+=head2 C<orders( [...] )>
+
+    my $orders = $camelid->orders( status => 'open' );
+
+Returns a list of Finance::Alpaca::Struct::Order objects.
+
+The orders endpoint returns a list of orders for the account, filtered by the
+supplied parameters.
+
+The following parameters are accepted:
+
+=over
+
+=item C<status> - Order status to be queried. C<open>, C<closed>, or C<all>. Defaults to C<open>.
+
+=item C<limit> - The maximum number of orders in response. Defaults to C<50> and max is C<500>.
+
+=item C<after> - The response will include only ones submitted after this timestamp (exclusive.)
+
+=item C<until> - The response will include only ones submitted until this timestamp (exclusive.)
+
+=item C<direction> - The chronological order of response based on the submission time. C<asc> or C<desc>. Defaults to C<desc>.
+
+=item C<nested> - Boolean value indicating whether the result will roll up multi-leg orders under the C<legs( )> field of the primary order.
+
+=item C<symbols> - A comma-separated list of symbols to filter by (ex. C<AAPL,TSLA,MSFT>).
+ 
+=back
+
 
 =head1 LICENSE
 

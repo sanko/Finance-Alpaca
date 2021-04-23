@@ -193,6 +193,25 @@ corresponding market data.
 This method expects a code reference. This callback will recieve all incoming
 data.
 
+## `orders( [...] )`
+
+    my $orders = $camelid->orders( status => 'open' );
+
+Returns a list of Finance::Alpaca::Struct::Order objects.
+
+The orders endpoint returns a list of orders for the account, filtered by the
+supplied parameters.
+
+The following parameters are accepted:
+
+- `status` - Order status to be queried. `open`, `closed`, or `all`. Defaults to `open`.
+- `limit` - The maximum number of orders in response. Defaults to `50` and max is `500`.
+- `after` - The response will include only ones submitted after this timestamp (exclusive.)
+- `until` - The response will include only ones submitted until this timestamp (exclusive.)
+- `direction` - The chronological order of response based on the submission time. `asc` or `desc`. Defaults to `desc`.
+- `nested` - Boolean value indicating whether the result will roll up multi-leg orders under the `legs( )` field of the primary order.
+- `symbols` - A comma-separated list of symbols to filter by (ex. `AAPL,TSLA,MSFT`).
+
 # LICENSE
 
 Copyright (C) Sanko Robinson.

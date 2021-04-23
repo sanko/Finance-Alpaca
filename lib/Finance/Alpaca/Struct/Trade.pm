@@ -43,7 +43,7 @@ Finance::Alpaca::Struct::Trade - A Single Trade Object
 
 =head1 DESCRIPTION
 
-The quote API provides  historcial trade data for a given ticker symbol on a
+The quote API provides historcial trade data for a given ticker symbol on a
 specified date.
 
 =head1 Properties
