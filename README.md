@@ -325,6 +325,15 @@ A response will be provided for each order that is attempted to be cancelled.
 If an order is no longer cancelable, the server will reject the request and and
 empty list will be returned.
 
+## `cancel_order( ... )`
+
+    $camelid->cancel_order( 'be07eebc-13f0-4072-aa4c-f67046081276' );
+
+Attempts to cancel an open order. If the order is no longer cancelable
+(example: `status` is `filled`), the server will respond with status 422,
+reject the request, and an empty list will be returned. Upon acceptance of the
+cancel request, it returns status 204 and a true value.
+
 # LICENSE
 
 Copyright (C) Sanko Robinson.

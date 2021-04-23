@@ -5,6 +5,7 @@ package Finance::Alpaca 1.00 {
     no warnings 'experimental::signatures';
     use Mojo::UserAgent;
     use Types::Standard qw[ArrayRef Bool Dict Enum InstanceOf Maybe Str Int];
+    use Types::UUID;
     #
     use lib './lib/';
     use Finance::Alpaca::Struct::Account qw[to_Account];
@@ -187,6 +188,12 @@ package Finance::Alpaca 1.00 {
             : ( ArrayRef [ Dict [ body => Order, id => Uuid, status => Int ] ] )
             ->assert_coerce( $res->json );
     }
+
+    sub cancel_order ( $s, $order_id ) {
+        my $res = $s->ua->delete( $s->endpoint . '/v2/orders/' . $order_id )->result;
+        return !$res->is_error;
+    }
+
 }
 1;
 __END__
@@ -629,6 +636,15 @@ elements:
 A response will be provided for each order that is attempted to be cancelled.
 If an order is no longer cancelable, the server will reject the request and and
 empty list will be returned.
+
+=head2 C<cancel_order( ... )>
+
+    $camelid->cancel_order( 'be07eebc-13f0-4072-aa4c-f67046081276' );
+
+Attempts to cancel an open order. If the order is no longer cancelable
+(example: C<status> is C<filled>), the server will respond with status 422,
+reject the request, and an empty list will be returned. Upon acceptance of the
+cancel request, it returns status 204 and a true value.
 
 =head1 LICENSE
 
