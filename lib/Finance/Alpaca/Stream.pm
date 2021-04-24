@@ -286,7 +286,8 @@ An unexpected error occurred on our end and Alpaca is investigating the issue.
 Copyright (C) Sanko Robinson.
 
 This library is free software; you can redistribute it and/or modify it under
-the same terms as Perl itself.
+the terms found in the Artistic License 2. Other copyrights, terms, and
+conditions may apply to data transmitted through this module.
 
 =head1 AUTHOR
 

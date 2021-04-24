@@ -478,12 +478,23 @@ Returns the current account configuration values.
 Updates the account configuration values. On success, the modified
 configuration is returned.
 
+# LEGAL
+
+This is a simple wrapper around the API as described in documentation. The
+author provides no investment, legal, or tax advice and is not responsible for
+any damages incurred while using this software. This software is not affiliated
+with Alpaca Securities LLC in any way.
+
+For Alpaca's terms and disclosures, please see their website at
+https://alpaca.markets/disclosures
+
 # LICENSE
 
 Copyright (C) Sanko Robinson.
 
 This library is free software; you can redistribute it and/or modify it under
-the same terms as Perl itself.
+the terms found in the Artistic License 2. Other copyrights, terms, and
+conditions may apply to data transmitted through this module.
 
 # AUTHOR
 
