@@ -1,4 +1,4 @@
-package Finance::Alpaca::Stream 1.00 {
+package Finance::Alpaca::DataStream 1.00 {
     use strictures 2;
     use Moo;
     use feature 'signatures';
@@ -114,12 +114,12 @@ __END__
 
 =head1 NAME
 
-Finance::Alpaca::Stream - A Streaming, Real-time Data Object
+Finance::Alpaca::DataStream - A Streaming, Real-time Data Object
 
 =head1 SYNOPSIS
 
     use Finance::Alpaca;
-    my $stream = Finance::Alpaca->new( ... )->stream(
+    my $stream = Finance::Alpaca->new( ... )->data_stream(
         sub ($packet) { ...; }
     );
     $stream->subscribe(
@@ -129,7 +129,7 @@ Finance::Alpaca::Stream - A Streaming, Real-time Data Object
 
 =head1 DESCRIPTION
 
-Finance::Alpaca::Stream receives real-time market data.
+Finance::Alpaca::DataStream receives real-time market data.
 
 You can send one or more subscription messages (described below) and after
 confirmation you will receive the corresponding market data.

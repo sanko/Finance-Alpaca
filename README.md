@@ -175,19 +175,19 @@ The data returned includes the following data:
 - `next_page_token` - Token that can be used to query the next page
 - `symbol` - Symbol that was queried
 
-## `stream( ... )`
+## `data_stream( ... )`
 
-    my $stream = $camelid->stream( sub ($packet) {  ... } );
+    my $stream = $camelid->data_stream( sub ($packet) {  ... } );
     $stream->subscribe(
         trades => ['MSFT']
     );
 
-Returns a new Finance::Alpaca::Stream object.
+Returns a new Finance::Alpaca::DataStream object.
 
 You are ready to receive real-time market data!
 
 You can send one or more subscription messages (described in
-Finance::Alpaca::Stream) and after confirmation you will receive the
+Finance::Alpaca::DataStream) and after confirmation you will receive the
 corresponding market data.
 
 This method expects a code reference. This callback will recieve all incoming
