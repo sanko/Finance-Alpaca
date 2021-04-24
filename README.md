@@ -235,9 +235,9 @@ Returns a Finance::Alpaca::Struct::Order object.
 You must provide the order's `client_order_id` (UUID). If the order is not
 found, an empty list is retured.
 
-## `submit_order( ... )`
+## `create_order( ... )`
 
-    my $order = $camelid->submit_order(
+    my $order = $camelid->create_order(
         symbol => 'MSFT',
         qty    => .1,
         side   => 'buy',

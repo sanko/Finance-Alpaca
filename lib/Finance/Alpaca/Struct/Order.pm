@@ -33,7 +33,7 @@ package Finance::Alpaca::Struct::Order 1.00 {
     has status        => (
         is  => 'ro',
         isa => Enum [
-            qw[new partially_filled filled done_for_day canceled expired replaced pending_cancel pending_replace accepted pending_new accepted_for_bidding stopped rejected suspended calculated]
+            qw[new partially_filled filled done_for_day canceled expired replaced pending_cancel pending_replace accepted pending_new accepted_for_bidding stopped rejected suspended calculated held]
         ],
         required => 1
     );

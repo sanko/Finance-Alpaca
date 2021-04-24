@@ -91,15 +91,20 @@ package Finance::Alpaca 1.00 {
         my $params = '';
         $params .= '?' . join '&', map {
             $_ . '='
-                . ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
+                . (
+                ref $params{$_} eq 'Time::Moment'
+                ? $params{$_}->strftime('%Y-%m-%dT%H:%M:%S%Z')
+                : $params{$_}
+                )
         } keys %params if keys %params;
-        return ( Dict [ bars => ArrayRef [Bar], symbol => Str, next_page_token => Maybe [Str] ] )
-            ->assert_coerce(
-            $s->ua->get(
-                sprintf 'https://data.alpaca.markets/v%d/stocks/%s/bars%s',
-                $s->api_version, $symbol, $params
-            )->result->json
-            );
+        my $res = $s->ua->get(
+            sprintf 'https://data.alpaca.markets/v%d/stocks/%s/bars%s',
+            $s->api_version, $symbol, $params
+        )->result;
+        return $res->is_error
+            ? $res->json
+            : ( Dict [ bars => ArrayRef [Bar], symbol => Str, next_page_token => Maybe [Str] ] )
+            ->assert_coerce( $res->json );
     }
 
     sub quotes ( $s, %params ) {
@@ -172,7 +177,7 @@ package Finance::Alpaca 1.00 {
         return $res->is_error ? () : to_Order( $res->json );
     }
 
-    sub submit_order ( $s, %params ) {
+    sub create_order ( $s, %params ) {
         $params{extended_hours} = ( !!$params{extended_hours} ) ? 'true' : 'false'
             if defined $params{extended_hours};
         my $res = $s->ua->post( $s->endpoint . '/v2/orders' => json => \%params )->result;
@@ -635,9 +640,9 @@ Returns a Finance::Alpaca::Struct::Order object.
 You must provide the order's C<client_order_id> (UUID). If the order is not
 found, an empty list is retured.
 
-=head2 C<submit_order( ... )>
+=head2 C<create_order( ... )>
 
-    my $order = $camelid->submit_order(
+    my $order = $camelid->create_order(
         symbol => 'MSFT',
         qty    => .1,
         side   => 'buy',

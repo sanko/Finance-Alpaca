@@ -13,10 +13,13 @@ package Finance::Alpaca::Struct::Bar 1.00 {
     use Moo;
     use lib './lib';
     use Finance::Alpaca::Types;
-    has t             => ( is => 'ro', isa => Timestamp, required  => 1, coerce => 1 );
-    has [qw[o h l c]] => ( is => 'ro', isa => Num,       required  => 1 );
-    has v             => ( is => 'ro', isa => Int,       required  => 1 );
-    has S             => ( is => 'ro', isa => Str,       predicate => 1 );    # If from stream
+    has timestamp => ( is => 'ro', isa => Timestamp, required => 1, init_arg => 't', coerce => 1 );
+    has open      => ( is => 'ro', isa => Num, required  => 1, init_arg => 'o' );
+    has high      => ( is => 'ro', isa => Num, required  => 1, init_arg => 'h' );
+    has low       => ( is => 'ro', isa => Num, required  => 1, init_arg => 'l' );
+    has close     => ( is => 'ro', isa => Num, required  => 1, init_arg => 'c' );
+    has volume    => ( is => 'ro', isa => Int, required  => 1, init_arg => 'v' );
+    has symbol    => ( is => 'ro', isa => Str, predicate => 1, init_arg => 'S' );   # If from stream
 
 }
 1;
@@ -38,7 +41,7 @@ Finance::Alpaca::Struct::Bar - A Single Bar Object
         end       => Time::Moment->now->with_hour(12)->with_day_of_week(3)
     );
 
-    say $bars[0]->h;
+    say $bars[0]->high;
 
 =head1 DESCRIPTION
 
@@ -48,23 +51,23 @@ The bars API serves aggregate historical data.
 
 The following properties are contained in the object.
 
-    $account->
+    $bar->close();
 
 =over
 
-=item C<t> - Timestamp with nanosecond precision as a Time::Moment object
+=item C<timestamp> - Timestamp with nanosecond precision as a Time::Moment object
 
-=item C<o> - Open price
+=item C<open> - Open price
 
-=item C<h> - High price
+=item C<high> - High price
 
-=item C<l> - Low price
+=item C<low> - Low price
 
-=item C<c> - Close price
+=item C<close> - Close price
 
-=item C<v> - Volume
+=item C<volume> - Volume
 
-=item C<S> - Symbol; only provided if data is from a Finance::Alpaca::Stream session
+=item C<symbol> - Symbol; only provided if data is from a Finance::Alpaca::Stream session
 
 =back
 
