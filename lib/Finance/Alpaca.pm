@@ -10,6 +10,7 @@ package Finance::Alpaca 1.00 {
     use lib './lib/';
     use Finance::Alpaca::Stream;
     use Finance::Alpaca::Struct::Account qw[to_Account];
+    use Finance::Alpaca::Struct::Activity qw[to_Activity Activity];
     use Finance::Alpaca::Struct::Asset qw[to_Asset Asset];
     use Finance::Alpaca::Struct::Bar qw[to_Bar Bar];
     use Finance::Alpaca::Struct::Calendar qw[to_Calendar Calendar];
@@ -19,6 +20,7 @@ package Finance::Alpaca 1.00 {
     use Finance::Alpaca::Struct::Position qw[to_Position Position];
     use Finance::Alpaca::Struct::Quote qw[to_Quote Quote];
     use Finance::Alpaca::Struct::Trade qw[to_Trade Trade];
+    use Finance::Alpaca::Struct::TradeActivity qw[to_TradeActivity TradeActivity];
     use Finance::Alpaca::Struct::Watchlist qw[to_Watchlist Watchlist];
     use Finance::Alpaca::Types;
     #
@@ -304,6 +306,26 @@ package Finance::Alpaca 1.00 {
         return $res->is_error ? ( $res->json ) : to_Configuration( $res->json );
     }
 
+    sub activities ( $s, %params ) {
+        $params{activity_types} = join ',', @{ $params{activity_types} } if $params{activity_types};
+        my $params = '';
+        $params .= '?' . join '&', map {
+            $_ . '='
+                . (
+                  ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string()
+                : ref $params{$_} eq 'ARRAY'        ? @{ $params{$_} }
+                :                                     $params{$_}
+                )
+        } keys %params if keys %params;
+        my $res = $s->ua->get(
+            sprintf $s->endpoint . '/v2/account/activities%s',
+            $params ? $params : ''
+        )->result;
+        return $res->is_error
+            ? $res->json
+            : map { $_->{activity_type} eq 'FILL' ? to_TradeActivity($_) : to_Activity($_) }
+            @{ $res->json };
+    }
 }
 1;
 __END__
@@ -922,6 +944,52 @@ Returns the current account configuration values.
 Updates the account configuration values. On success, the modified
 configuration is returned.
 
+=head2 C<activities( [...] )>
+
+    my @activities = $camelid->activities();
+
+Returns account activity entries for many types of activities.
+
+    @activities = $camelid->activities(activity_types => [qw[ACATC ACATS]]);
+
+Returns account activity entries for a set of specific types of activity. See
+L<Finance::Alpaca::Struct::Activity> for a list of activity types.
+
+This method expects a combination of the following optional parameters:
+
+=over
+
+=item C<activity_types> - A list of the activity types to include in the response. If unspecified, activities of all types will be returned.
+
+=item C<date> - The date for which you want to see activities as string or Time::Moment object
+
+=item C<until> - The response will contain only activities submitted before this date. (Cannot be used with C<date>.)
+
+=item C<after> - The response will contain only activities submitted after this date. (Cannot be used with C<date>.)
+
+=item C<direction> - C<asc> or C<desc> (default is C<desc> if unspecified.)
+
+=item C<page_size> - The maximum number of entries to return in the response
+
+=item C<page_token> - The ID of the end of your current page of results
+
+=back
+
+=head3 Paging of Results
+
+Pagination is handled using the C<page_token> and C<page_size> parameters.
+C<page_token> represents the ID of the end of your current page of results. If
+specified with a direction of C<desc>, for example, the results will end before
+the activity with the specified ID. If specified with a direction of C<asc>,
+results will begin with the activity immediately after the one specified.
+C<page_size> is the maximum number of entries to return in the response. If
+C<date> is not specified, the default and maximum value is C<100>. If C<date>
+is specified, the default behavior is to return all results, and there is no
+maximum page size.
+
+=head1 See Also
+
+https://alpaca.markets/docs/api-documentation/api-v2/
 
 =head1 LEGAL
 

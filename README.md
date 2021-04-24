@@ -478,6 +478,43 @@ Returns the current account configuration values.
 Updates the account configuration values. On success, the modified
 configuration is returned.
 
+## `activities( [...] )`
+
+    my @activities = $camelid->activities();
+
+Returns account activity entries for many types of activities.
+
+    @activities = $camelid->activities(activity_types => [qw[ACATC ACATS]]);
+
+Returns account activity entries for a set of specific types of activity. See
+[Finance::Alpaca::Struct::Activity](https://metacpan.org/pod/Finance%3A%3AAlpaca%3A%3AStruct%3A%3AActivity) for a list of activity types.
+
+This method expects a combination of the following optional parameters:
+
+- `activity_types` - A list of the activity types to include in the response. If unspecified, activities of all types will be returned.
+- `date` - The date for which you want to see activities as string or Time::Moment object
+- `until` - The response will contain only activities submitted before this date. (Cannot be used with `date`.)
+- `after` - The response will contain only activities submitted after this date. (Cannot be used with `date`.)
+- `direction` - `asc` or `desc` (default is `desc` if unspecified.)
+- `page_size` - The maximum number of entries to return in the response
+- `page_token` - The ID of the end of your current page of results
+
+### Paging of Results
+
+Pagination is handled using the `page_token` and `page_size` parameters.
+`page_token` represents the ID of the end of your current page of results. If
+specified with a direction of `desc`, for example, the results will end before
+the activity with the specified ID. If specified with a direction of `asc`,
+results will begin with the activity immediately after the one specified.
+`page_size` is the maximum number of entries to return in the response. If
+`date` is not specified, the default and maximum value is `100`. If `date`
+is specified, the default behavior is to return all results, and there is no
+maximum page size.
+
+# See Also
+
+https://alpaca.markets/docs/api-documentation/api-v2/
+
 # LEGAL
 
 This is a simple wrapper around the API as described in documentation. The
