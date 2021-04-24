@@ -13,6 +13,7 @@ package Finance::Alpaca 1.00 {
     use Finance::Alpaca::Struct::Asset qw[to_Asset Asset];
     use Finance::Alpaca::Struct::Bar qw[to_Bar Bar];
     use Finance::Alpaca::Struct::Calendar qw[to_Calendar Calendar];
+    use Finance::Alpaca::Struct::Configuration qw[to_Configuration Configuration];
     use Finance::Alpaca::Struct::Clock qw[to_Clock];
     use Finance::Alpaca::Struct::Order qw[to_Order Order];
     use Finance::Alpaca::Struct::Position qw[to_Position Position];
@@ -249,7 +250,6 @@ package Finance::Alpaca 1.00 {
     }
 
     sub watchlists ($s) {
-
         return ( ArrayRef [Watchlist] )
             ->assert_coerce( $s->ua->get( $s->endpoint . '/v2/watchlists' )->result->json );
     }
@@ -292,6 +292,18 @@ package Finance::Alpaca 1.00 {
             ->result;
         return $res->is_error ? ( $res->json ) : to_Watchlist( $res->json );
     }
+
+    sub configuration ($s) {
+        my $res = $s->ua->get( $s->endpoint . '/v2/account/configurations' )->result;
+        return $res->is_error ? ( $res->json ) : to_Configuration( $res->json );
+    }
+
+    sub modify_configuration ( $s, %params ) {
+        my $res = $s->ua->patch( $s->endpoint . '/v2/account/configurations' => json => {%params} )
+            ->result;
+        return $res->is_error ? ( $res->json ) : to_Configuration( $res->json );
+    }
+
 }
 1;
 __END__
@@ -894,6 +906,21 @@ a Finance::Alpaca::Struct::Watchlist object is returned.
 
 Delete one entry for an asset by symbol name. On success, a
 Finance::Alpaca::Struct::Watchlist object is returned.
+
+=head2 C<configuration( )>
+
+    my $confs = $camelid->configuration( );
+
+Returns the current account configuration values.
+
+=head2 C<modify_configuration( )>
+
+    $confs = $camelid->modify_configuration(
+        trade_confirm_email=> 'all'
+    );
+
+Updates the account configuration values. On success, the modified
+configuration is returned.
 
 =head1 LICENSE
 

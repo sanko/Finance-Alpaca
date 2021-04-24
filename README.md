@@ -463,6 +463,21 @@ a Finance::Alpaca::Struct::Watchlist object is returned.
 Delete one entry for an asset by symbol name. On success, a
 Finance::Alpaca::Struct::Watchlist object is returned.
 
+## `configuration( )`
+
+    my $confs = $camelid->configuration( );
+
+Returns the current account configuration values.
+
+## `modify_configuration( )`
+
+    $confs = $camelid->modify_configuration(
+        trade_confirm_email=> 'all'
+    );
+
+Updates the account configuration values. On success, the modified
+configuration is returned.
+
 # LICENSE
 
 Copyright (C) Sanko Robinson.
