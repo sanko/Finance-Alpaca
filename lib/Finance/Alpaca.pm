@@ -8,6 +8,7 @@ package Finance::Alpaca 1.00 {
     use Types::UUID;
     #
     use lib './lib/';
+    use Finance::Alpaca::Stream;
     use Finance::Alpaca::Struct::Account qw[to_Account];
     use Finance::Alpaca::Struct::Asset qw[to_Asset Asset];
     use Finance::Alpaca::Struct::Bar qw[to_Bar Bar];
@@ -16,8 +17,8 @@ package Finance::Alpaca 1.00 {
     use Finance::Alpaca::Struct::Order qw[to_Order Order];
     use Finance::Alpaca::Struct::Position qw[to_Position Position];
     use Finance::Alpaca::Struct::Quote qw[to_Quote Quote];
-    use Finance::Alpaca::Stream;
     use Finance::Alpaca::Struct::Trade qw[to_Trade Trade];
+    use Finance::Alpaca::Struct::Watchlist qw[to_Watchlist Watchlist];
     use Finance::Alpaca::Types;
     #
     has ua => ( is => 'lazy', isa => InstanceOf ['Mojo::UserAgent'] );
@@ -245,6 +246,51 @@ package Finance::Alpaca 1.00 {
                 timestamp       => ArrayRef [Timestamp]
             ]
         )->assert_coerce( $res->json );
+    }
+
+    sub watchlists ($s) {
+
+        return ( ArrayRef [Watchlist] )
+            ->assert_coerce( $s->ua->get( $s->endpoint . '/v2/watchlists' )->result->json );
+    }
+
+    sub create_watchlist ( $s, $name, @symbols ) {
+        my $res
+            = $s->ua->post( $s->endpoint
+                . '/v2/watchlists' => json =>
+                { name => $name, ( @symbols ? ( symbols => \@symbols ) : () ) } )->result;
+        return $res->is_error ? ( $res->json ) : to_Watchlist( $res->json );
+    }
+
+    sub delete_watchlist ( $s, $watchlist_id ) {
+        my $res = $s->ua->delete( $s->endpoint . '/v2/watchlists/' . $watchlist_id )->result;
+        return $res->is_error ? $res->json : 1;
+    }
+
+    sub watchlist ( $s, $watchlist_id ) {
+        my $res = $s->ua->get( $s->endpoint . '/v2/watchlists/' . $watchlist_id )->result;
+        return $res->is_error ? ( $res->json ) : to_Watchlist( $res->json );
+    }
+
+    sub update_watchlist ( $s, $watchlist_id, %params ) {
+        my $res
+            = $s->ua->put( $s->endpoint . '/v2/watchlists/' . $watchlist_id => json => {%params} )
+            ->result;
+        return $res->is_error ? ( $res->json ) : to_Watchlist( $res->json );
+    }
+
+    sub add_to_watchlist ( $s, $watchlist_id, $symbol ) {
+        my $res
+            = $s->ua->post(
+            $s->endpoint . '/v2/watchlists/' . $watchlist_id => json => { symbol => $symbol } )
+            ->result;
+        return $res->is_error ? ( $res->json ) : to_Watchlist( $res->json );
+    }
+
+    sub remove_from_watchlist ( $s, $watchlist_id, $symbol ) {
+        my $res = $s->ua->delete( $s->endpoint . '/v2/watchlists/' . $watchlist_id . '/' . $symbol )
+            ->result;
+        return $res->is_error ? ( $res->json ) : to_Watchlist( $res->json );
     }
 }
 1;
@@ -795,6 +841,59 @@ The returned data is in a hash ref with the following keys:
 =item C<timeframe> - time window size of each data element
 
 =back
+
+=head2 C<watchlists( )>
+
+    my @watchlists = $camelid->watchlists;
+
+Returns the list of watchlists registered under the account as
+Finance::Alpaca::Struct::Watchlist objects.
+
+=head2 C<create_watchlist( ..., [...] )>
+
+    my $new_watchlist = $camelid->create_watchlist( 'Leveraged ETFs' );
+    my $tech_watchlist = $camelid->create_watchlist( 'FAANG', qw[FB AMZN AAPL NFLX GOOG] );
+
+Create a new watchlist potentially with an initial set of assets. Only the
+first parameter is required and is the name of the user-defined new watchlist.
+This name must be a maximum of C<64> characters. To add assets to the watchlist
+on create, include a list of ticker symbols.
+
+On success, the related Finance::Alpaca::Struct::Watchlist object is returned.
+
+=head2 C<delete_watchlist( ... )>
+
+    $camelid->delete_watchlist( '88f0c1e1-58d4-42c5-b85b-864839045678' );
+
+Delete a watchlist identified by the ID. This is a permanent deletion.
+
+=head2 C<watchlist( ... )>
+
+    $camelid->watchlist( '88f0c1e1-58d4-42c5-b85b-864839045678' );
+
+Returns a watchlist identified by the ID.
+
+=head2 C<update_watchlist( ... )>
+
+    $camelid->update_watchlist( '88f0c1e1-58d4-42c5-b85b-864839045678', name => 'Low priority' );
+    $camelid->update_watchlist( '29d85812-b4a2-45da-ac6c-dcc0ad9c1cd3', symbols => [qw[MA V]] );
+
+Update the name and/or content of watchlist. On success, a
+Finance::Alpaca::Struct::Watchlist object is returned.
+
+=head2 C<add_to_watchlist( ... )>
+
+    $camelid->add_to_watchlist( '88f0c1e1-58d4-42c5-b85b-864839045678', 'TSLA');
+
+Append an asset for the symbol to the end of watchlist asset list. On success,
+a Finance::Alpaca::Struct::Watchlist object is returned.
+
+=head2 C<remove_from_watchlist( ... )>
+
+    $camelid->remove_from_watchlist( '88f0c1e1-58d4-42c5-b85b-864839045678', 'F');
+
+Delete one entry for an asset by symbol name. On success, a
+Finance::Alpaca::Struct::Watchlist object is returned.
 
 =head1 LICENSE
 

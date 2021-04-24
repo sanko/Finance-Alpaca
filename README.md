@@ -410,6 +410,59 @@ The returned data is in a hash ref with the following keys:
 - `base_value` - basis in dollar of the profit loss calculation
 - `timeframe` - time window size of each data element
 
+## `watchlists( )`
+
+    my @watchlists = $camelid->watchlists;
+
+Returns the list of watchlists registered under the account as
+Finance::Alpaca::Struct::Watchlist objects.
+
+## `create_watchlist( ..., [...] )`
+
+    my $new_watchlist = $camelid->create_watchlist( 'Leveraged ETFs' );
+    my $tech_watchlist = $camelid->create_watchlist( 'FAANG', qw[FB AMZN AAPL NFLX GOOG] );
+
+Create a new watchlist potentially with an initial set of assets. Only the
+first parameter is required and is the name of the user-defined new watchlist.
+This name must be a maximum of `64` characters. To add assets to the watchlist
+on create, include a list of ticker symbols.
+
+On success, the related Finance::Alpaca::Struct::Watchlist object is returned.
+
+## `delete_watchlist( ... )`
+
+    $camelid->delete_watchlist( '88f0c1e1-58d4-42c5-b85b-864839045678' );
+
+Delete a watchlist identified by the ID. This is a permanent deletion.
+
+## `watchlist( ... )`
+
+    $camelid->watchlist( '88f0c1e1-58d4-42c5-b85b-864839045678' );
+
+Returns a watchlist identified by the ID.
+
+## `update_watchlist( ... )`
+
+    $camelid->update_watchlist( '88f0c1e1-58d4-42c5-b85b-864839045678', name => 'Low priority' );
+    $camelid->update_watchlist( '29d85812-b4a2-45da-ac6c-dcc0ad9c1cd3', symbols => [qw[MA V]] );
+
+Update the name and/or content of watchlist. On success, a
+Finance::Alpaca::Struct::Watchlist object is returned.
+
+## `add_to_watchlist( ... )`
+
+    $camelid->add_to_watchlist( '88f0c1e1-58d4-42c5-b85b-864839045678', 'TSLA');
+
+Append an asset for the symbol to the end of watchlist asset list. On success,
+a Finance::Alpaca::Struct::Watchlist object is returned.
+
+## `remove_from_watchlist( ... )`
+
+    $camelid->remove_from_watchlist( '88f0c1e1-58d4-42c5-b85b-864839045678', 'F');
+
+Delete one entry for an asset by symbol name. On success, a
+Finance::Alpaca::Struct::Watchlist object is returned.
+
 # LICENSE
 
 Copyright (C) Sanko Robinson.
