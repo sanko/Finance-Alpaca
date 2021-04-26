@@ -352,7 +352,7 @@ __END__
 
 =head1 NAME
 
-Finance::Alpaca - It's new $module
+Finance::Alpaca - Perl Wrapper for Alpaca's Commission-free Stock Trading API
 
 =head1 SYNOPSIS
 
@@ -360,7 +360,8 @@ Finance::Alpaca - It's new $module
 
 =head1 DESCRIPTION
 
-Finance::Alpaca is ... still under construction.
+Finance::Alpaca allows you to buy, sell, and short U.S. stocks with zero
+commissions with Alpaca, an API first, algo-friendly brokerage.
 
 =head1 METHODS
 
@@ -1019,6 +1020,11 @@ maximum page size.
 =head1 See Also
 
 https://alpaca.markets/docs/api-documentation/api-v2/
+
+=head1 Note
+
+I do not have a live trading account with Alpaca but this package has worked
+well with paper trading. YMMV.
 
 =head1 LEGAL
 

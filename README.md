@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.com/sanko/Finance-Alpaca.svg?branch=master)](https://travis-ci.com/sanko/Finance-Alpaca) [![MetaCPAN Release](https://badge.fury.io/pl/Finance-Alpaca.svg)](https://metacpan.org/release/Finance-Alpaca)
 # NAME
 
-Finance::Alpaca - It's new $module
+Finance::Alpaca - Perl Wrapper for Alpaca's Commission-free Stock Trading API
 
 # SYNOPSIS
 
@@ -9,7 +9,8 @@ Finance::Alpaca - It's new $module
 
 # DESCRIPTION
 
-Finance::Alpaca is ... still under construction.
+Finance::Alpaca allows you to buy, sell, and short U.S. stocks with zero
+commissions with Alpaca, an API first, algo-friendly brokerage.
 
 # METHODS
 
@@ -525,6 +526,11 @@ maximum page size.
 # See Also
 
 https://alpaca.markets/docs/api-documentation/api-v2/
+
+# Note
+
+I do not have a live trading account with Alpaca but this package has worked
+well with paper trading. YMMV.
 
 # LEGAL
 
