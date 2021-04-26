@@ -516,17 +516,8 @@ The following parameters are accepted:
 
 =back
 
-The data returned includes the following data:
-
-=over
-
-=item C<bars> - List of Finance::Alpaca::Struct::Bar objects
-
-=item C<next_page_token> - Token that can be used to query the next page
-
-=item C<symbol> - Symbol that was queried
-
-=back
+The method returns a hash reference with bar data included as a list under the
+symbol as well as a C<next_page_token> for pagination if applicable.
 
 =head2 C<quotes( ... )>
 

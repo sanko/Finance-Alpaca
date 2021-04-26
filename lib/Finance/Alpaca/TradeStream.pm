@@ -7,7 +7,7 @@ package Finance::Alpaca::TradeStream 0.9900 {
     use Mojo::Promise;
     #
     use lib './lib/';
-    use Finance::Alpaca::Struct::TradeUpdate qw[TradeUpdate];
+    use Finance::Alpaca::Struct::TradeUpdate qw[to_TradeUpdate];
     #
     has tx => ( is => 'rwp', isa => InstanceOf ['Mojo::Transaction::WebSocket'], predicate => 1 );
     has cb => ( is => 'ro',  isa => CodeRef, required => 1 );
@@ -54,9 +54,7 @@ package Finance::Alpaca::TradeStream 0.9900 {
                             $s->_set_subscriptions( $msg->{data}{streams} );
                         }
                         elsif ( $msg->{stream} eq 'trade_updates' ) {
-                            $s->cb->(
-                                ( Dict [ data => TradeUpdate, stream => Str ] )->assert_coerce($msg)
-                            );
+                            $s->cb->( to_TradeUpdate( $msg->{data} ) );
                         }
                         else {
                             #warn 'unknown data';
