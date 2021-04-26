@@ -53,7 +53,6 @@ Finance::Alpaca::Struct::Order - A Single Order Object
 
     use Finance::Alpaca;
     my @orders = Finance::Alpaca->new( ... )->orders( status => 'all' );
-
     say $orders[0]->id;
 
 =head1 DESCRIPTION
@@ -71,7 +70,7 @@ the recommended method of maintaining order state.
 
 The following properties are contained in the object.
 
-    $trade->id;
+    $trade->id();
 
 =over
 

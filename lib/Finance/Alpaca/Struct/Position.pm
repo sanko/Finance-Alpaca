@@ -37,8 +37,8 @@ Finance::Alpaca::Struct::Position - A Single Account Object
 =head1 SYNOPSIS
 
     use Finance::Alpaca;
-    my @positions = Finance::Alpaca->new( ... )->positions;
-    say $positions[0]->
+    my $tsla = Finance::Alpaca->new( ... )->position( 'TSLA' );
+    say sprintf '%s %f shares of %s', ucfirst $tsla->side, abs $tsla->qty, $tsla->symbol
 
 =head1 DESCRIPTION
 

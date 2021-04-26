@@ -30,8 +30,7 @@ Finance::Alpaca::Struct::Configuration - A Single Account Configuration Object
 =head1 SYNOPSIS
 
     use Finance::Alpaca;
-    my @configurations = Finance::Alpaca->new( ... )->configurations;
-    say $configurations[0]->
+    my $config = Finance::Alpaca->new( ... )->configuration;
 
 =head1 DESCRIPTION
 

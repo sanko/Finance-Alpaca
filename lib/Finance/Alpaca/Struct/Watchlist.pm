@@ -33,7 +33,6 @@ Finance::Alpaca::Struct::Watchlist - A Single Watchlist Object
 
     use Finance::Alpaca;
     my @watchlists = Finance::Alpaca->new( ... )->watchlists;
-    say $watchlists[0]->
 
 =head1 DESCRIPTION
 

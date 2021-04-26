@@ -28,7 +28,14 @@ Finance::Alpaca::Struct::Calendar - A Single Calendar Date Object
 =head1 SYNOPSIS
 
     use Finance::Alpaca;
-    
+    my @days = $camelid->calendar(
+        start => Time::Moment->now,
+        end   => Time::Moment->now->plus_days(14)
+    );
+    for my $day (@days) {
+        say sprintf '%s the market opens at %s Eastern',
+            $day->date, $day->open;
+    }
 
 =head1 DESCRIPTION
 
@@ -40,6 +47,8 @@ and close times for the market days, taking into account early closures.
 =head1 Properties
 
 A calendar day contains the following properties:
+
+    $day->date();
 
 =over
 

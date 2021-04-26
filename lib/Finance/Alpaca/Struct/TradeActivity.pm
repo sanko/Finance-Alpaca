@@ -37,7 +37,6 @@ Finance::Alpaca::Struct::TradeActivity - A Single Trade Activity Object
 
     use Finance::Alpaca;
     my @activities = Finance::Alpaca->new( ... )->activities;
-    say $activities[0]->
 
 =head1 DESCRIPTION
 

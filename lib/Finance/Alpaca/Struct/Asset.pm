@@ -34,8 +34,7 @@ Finance::Alpaca::Struct::Asset - A Single Account Object
 =head1 SYNOPSIS
 
     use Finance::Alpaca;
-    my @assets = Finance::Alpaca->new( ... )->assets;
-    say $assets[0]->
+    Finance::Alpaca->new( ... )->assets;
 
 =head1 DESCRIPTION
 
@@ -49,7 +48,7 @@ C<tradable=false>.
 
 The following properties are contained in the object.
 
-    $account->
+    $account->id;
 
 =over
 

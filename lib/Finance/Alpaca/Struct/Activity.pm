@@ -40,8 +40,9 @@ Finance::Alpaca::Struct::Activity - A Single Account Activity Object
 =head1 SYNOPSIS
 
     use Finance::Alpaca;
-    my @activities = Finance::Alpaca->new( ... )->activities;
-    say $activities[0]->
+    for my $activity (Finance::Alpaca->new( ... )->activities( activity_types => [qw[ACATC ACATS]] )) {
+        say sprintf '%s @ %f', $activity->symbol, $activity->net_amount
+    }
 
 =head1 DESCRIPTION
 

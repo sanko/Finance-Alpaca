@@ -47,7 +47,7 @@ Finance::Alpaca::Struct::Account - A Single Account Object
 
     use Finance::Alpaca;
     my $acct = Finance::Alpaca->new( ... )->account;
-    say $account->
+    say sprintf 'I can%s short!', $acct->shorting_enabled ? '' : 'not';
 
 =head1 DESCRIPTION
 
@@ -65,7 +65,7 @@ further day-trades.
 
 The following properties are contained in the object.
 
-    $account->
+    $account->id()
 
 =over
 
