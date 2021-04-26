@@ -175,6 +175,17 @@ The data returned includes the following data:
 - `next_page_token` - Token that can be used to query the next page
 - `symbol` - Symbol that was queried
 
+## `trade_stream( ... )`
+
+    my $stream = $camelid->trade_stream( sub ($packet) {  ... } );
+
+Returns a new Finance::Alpaca::TradeStream object.
+
+You are ready to receive real-time account and order data!
+
+This method expects a code reference. This callback will recieve all incoming
+data.
+
 ## `data_stream( ... )`
 
     my $stream = $camelid->data_stream( sub ($packet) {  ... } );

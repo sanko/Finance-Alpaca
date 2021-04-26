@@ -8,6 +8,7 @@ package Finance::Alpaca 1.00 {
     use Types::UUID;
     #
     use lib './lib/';
+
     use Finance::Alpaca::DataStream;
     use Finance::Alpaca::Struct::Account qw[to_Account];
     use Finance::Alpaca::Struct::Activity qw[to_Activity Activity];
@@ -22,6 +23,7 @@ package Finance::Alpaca 1.00 {
     use Finance::Alpaca::Struct::Trade qw[to_Trade Trade];
     use Finance::Alpaca::Struct::TradeActivity qw[to_TradeActivity TradeActivity];
     use Finance::Alpaca::Struct::Watchlist qw[to_Watchlist Watchlist];
+    use Finance::Alpaca::TradeStream;
     use Finance::Alpaca::Types;
     #
     has ua => ( is => 'lazy', isa => InstanceOf ['Mojo::UserAgent'] );
@@ -139,6 +141,17 @@ package Finance::Alpaca 1.00 {
                 $s->api_version, $symbol, $params
             )->result->json
             );
+    }
+
+    sub trade_stream ( $s, $cb, %params ) {
+        my $stream = Finance::Alpaca::TradeStream->new( cb => $cb );
+        $stream->authorize( $s->ua, $s->keys, $s->paper )->catch(
+            sub ($err) {
+                $stream = ();
+                warn "WebSocket error: $err";
+            }
+        )->wait;
+        $stream;
     }
 
     sub data_stream ( $s, $cb, %params ) {
@@ -569,6 +582,17 @@ The data returned includes the following data:
 =item C<symbol> - Symbol that was queried
 
 =back
+
+=head2 C<trade_stream( ... )>
+
+    my $stream = $camelid->trade_stream( sub ($packet) {  ... } );
+
+Returns a new Finance::Alpaca::TradeStream object.
+
+You are ready to receive real-time account and order data!
+
+This method expects a code reference. This callback will recieve all incoming
+data.
 
 =head2 C<data_stream( ... )>
 
