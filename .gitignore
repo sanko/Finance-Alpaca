@@ -44,4 +44,3 @@ MYMETA.*
 MANIFEST.SKIP
 .vscode/
 eg/get_account.pl
-lib/Finance/Alpaca/Cookbook.pod
