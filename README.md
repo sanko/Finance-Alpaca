@@ -6,6 +6,17 @@ Finance::Alpaca - Perl Wrapper for Alpaca's Commission-free Stock Trading API
 # SYNOPSIS
 
     use Finance::Alpaca;
+    my $alpaca = Finance::Alpaca->new(
+        paper => 1,
+        keys  => [ ... ]
+    );
+    my $order = $alpaca->create_order(
+        symbol => 'MSFT',
+        qty    => .1,
+        side   => 'buy',
+        type   => 'market',
+        time_in_force => 'day'
+    );
 
 # DESCRIPTION
 
@@ -32,12 +43,15 @@ This constructor accepts the following parameters:
 
 - `paper` - Boolean value
 
-    If you're attempting to use Alpaca's paper trading functionality, this **must**
-    be a true value. Otherwise, you will be making live trades with actual assets.
+    If you're attempting to use Alpaca's paper trading system, this **must** be a
+    true value. Otherwise, you will be making live trades with real assets!
 
     **Note**: This is a false value by default.
 
 ## `account( )`
+
+    my $acct = $camelid->account( );
+    CORE::say sprintf 'I can%s short!', $acct->shorting_enabled ? '' : 'not';
 
 Returns a Finance::Alpaca::Struct::Account object.
 
@@ -60,6 +74,15 @@ close.
 
 ## `calendar( [...] )`
 
+        my @days = $camelid->calendar(
+            start => Time::Moment->now,
+            end   => Time::Moment->now->plus_days(14)
+        );
+        for my $day (@days) {
+            say sprintf '%s the market opens at %s Eastern',
+                $day->date, $day->open;
+        }
+
 Returns a list of Finance::Alpaca::Struct::Calendar objects.
 
 The calendar endpoint serves the full list of market days from 1970 to 2029.
@@ -74,6 +97,9 @@ begin on January 1st, 1970.
 
 ## `assets( [...] )`
 
+    say $_->symbol
+        for sort { $a->symbol cmp $b->symbol } @{ $camelid->assets( status => 'active' ) };
+
 Returns a list of Finance::Alpaca::Struct::Asset objects.
 
 The assets endpoint serves as the master list of assets available for trade and
@@ -81,7 +107,7 @@ data consumption from Alpaca.
 
 The following parameters are accepted:
 
-- `status` - e.g. `active`. By default, all statuses are included
+- `status` - e.g. `active` or `inactive`. By default, all statuses are included
 - `asset_class` - Defaults to `us_equity`
 
 ## `asset( ... )`
@@ -97,11 +123,11 @@ found, an empty list is retured.
 ## `bars( ... )`
 
     my $bars = $camelid->bars(
-        symbol    => 'MSFT',
-        timeframe => '1Min',
-        start     => Time::Moment->now->with_day_of_week(2),
-        end       => Time::Moment->now->with_hour(12)->with_day_of_week(3)
-    );
+          symbol    => 'MSFT',
+          timeframe => '1Min',
+          start     => Time::Moment->now->with_hour(10),
+          end       => Time::Moment->now->minus_minutes(20)
+      );
 
 Returns a list of Finance::Alpaca::Struct::Bar objects along with other data.
 
@@ -125,9 +151,9 @@ The data returned includes the following data:
 ## `quotes( ... )`
 
     my $quotes = $camelid->quotes(
-        symbol    => 'MSFT',
-        start     => Time::Moment->now->with_day_of_week(2),
-        end       => Time::Moment->now->with_hour(12)->with_day_of_week(3)
+        symbol => 'MSFT',
+        start  => Time::Moment->now->with_hour(10),
+        end    => Time::Moment->now->minus_minutes(20)
     );
 
 Returns a list of Finance::Alpaca::Struct::Quote objects along with other data.
@@ -152,9 +178,9 @@ The data returned includes the following data:
 ## `trades( ... )`
 
     my $trades = $camelid->trades(
-        symbol    => 'MSFT',
-        start     => Time::Moment->now->with_day_of_week(2),
-        end       => Time::Moment->now->with_hour(12)->with_day_of_week(3)
+        symbol => 'MSFT',
+        start  => Time::Moment->now->with_hour(10),
+        end    => Time::Moment->now->minus_minutes(20)
     );
 
 Returns a list of Finance::Alpaca::Struct::Trade objects along with other data.
@@ -287,11 +313,11 @@ The following parameters are accepted:
 
 ## `replace_order( ..., ... )`
 
-    my $new_order = $camelid->reaplace_order(
+    my $new_order = $camelid->replace_order(
         $order->id,
-        qty => 3,
-        time_in_force => 'fok'
-        limit_price => 120
+        qty           => 1,
+        time_in_force => 'fok',
+        limit_price   => 120
     );
 
 Replaces a single order with updated parameters. Each parameter overrides the
@@ -353,7 +379,7 @@ cancel request, it returns status 204 and a true value.
 Retrieves a list of the account’s open positions and returns a list of
 Finance::Alpaca::Struct::Positon objects.
 
-## `positon( ... )`
+## `position( ... )`
 
     my $elon = $camelid->position( 'TSLA' );
     my $msft = $camelid->position( 'b6d1aa75-5c9c-4353-a305-9e2caa1925ab' );

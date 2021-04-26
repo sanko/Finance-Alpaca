@@ -17,7 +17,7 @@ package Finance::Alpaca::Struct::TradeActivity 0.9900 {
     has activity_type => ( is => 'ro', isa => Str, required => 1 );    # FILL
 
     has order_id         => ( is => 'ro', isa => Uuid, required => 1 );
-    has side             => ( is => 'ro', isa => Enum [qw[buy sell]], required => 1 );
+    has side             => ( is => 'ro', isa => Enum [qw[buy sell sell_short]], required => 1 );
     has transaction_time => ( is => 'ro', isa => Timestamp, required => 1, coerce => 1 );
 
     has [qw[symbol id]]                     => ( is => 'ro', isa => Str, required => 1 );
@@ -69,7 +69,7 @@ The following properties are contained in the object.
 
 =item C<qty> - The number of shares involved in the trade execution
 
-=item C<side> - C<buy> or C<sell>
+=item C<side> - C<buy>, C<sell>, or C<sell_short>
 
 =item C<symbol> - The symbol of the security being traded
 

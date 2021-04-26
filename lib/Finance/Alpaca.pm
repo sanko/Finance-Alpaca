@@ -7,7 +7,7 @@ package Finance::Alpaca 0.9900 {
     use Types::Standard qw[ArrayRef Bool Dict Enum InstanceOf Maybe Num Str Int];
     use Types::UUID;
     #
-    use lib './lib/';
+    use lib '../../lib/';
 
     use Finance::Alpaca::DataStream;
     use Finance::Alpaca::Struct::Account qw[to_Account];
@@ -70,7 +70,7 @@ package Finance::Alpaca 0.9900 {
         } keys %params if keys %params;
         my $tx = $s->ua->build_tx( GET => $s->endpoint . '/v2/calendar' . $params );
         $tx = $s->ua->start($tx);
-        return ( ArrayRef [Calendar] )->assert_coerce( $tx->result->json );
+        return @{ ( ArrayRef [Calendar] )->assert_coerce( $tx->result->json ) };
     }
 
     sub assets ( $s, %params ) {
@@ -357,6 +357,17 @@ Finance::Alpaca - Perl Wrapper for Alpaca's Commission-free Stock Trading API
 =head1 SYNOPSIS
 
     use Finance::Alpaca;
+    my $alpaca = Finance::Alpaca->new(
+        paper => 1,
+        keys  => [ ... ]
+    );
+    my $order = $alpaca->create_order(
+        symbol => 'MSFT',
+        qty    => .1,
+        side   => 'buy',
+        type   => 'market',
+        time_in_force => 'day'
+    );
 
 =head1 DESCRIPTION
 
@@ -385,14 +396,17 @@ be acquired in the developer web console and are only visible on creation.
 
 =item C<paper> - Boolean value
 
-If you're attempting to use Alpaca's paper trading functionality, this B<must>
-be a true value. Otherwise, you will be making live trades with actual assets.
+If you're attempting to use Alpaca's paper trading system, this B<must> be a
+true value. Otherwise, you will be making live trades with real assets!
 
 B<Note>: This is a false value by default.
 
 =back
 
 =head2 C<account( )>
+
+    my $acct = $camelid->account( );
+    CORE::say sprintf 'I can%s short!', $acct->shorting_enabled ? '' : 'not';
 
 Returns a Finance::Alpaca::Struct::Account object.
 
@@ -415,6 +429,15 @@ close.
 
 =head2 C<calendar( [...] )>
 
+        my @days = $camelid->calendar(
+            start => Time::Moment->now,
+            end   => Time::Moment->now->plus_days(14)
+        );
+        for my $day (@days) {
+            say sprintf '%s the market opens at %s Eastern',
+                $day->date, $day->open;
+        }
+
 Returns a list of Finance::Alpaca::Struct::Calendar objects.
 
 The calendar endpoint serves the full list of market days from 1970 to 2029.
@@ -434,6 +457,9 @@ begin on January 1st, 1970.
 
 =head2 C<assets( [...] )>
 
+    say $_->symbol
+        for sort { $a->symbol cmp $b->symbol } @{ $camelid->assets( status => 'active' ) };
+
 Returns a list of Finance::Alpaca::Struct::Asset objects.
 
 The assets endpoint serves as the master list of assets available for trade and
@@ -443,7 +469,7 @@ The following parameters are accepted:
 
 =over
 
-=item C<status> - e.g. C<active>. By default, all statuses are included
+=item C<status> - e.g. C<active> or C<inactive>. By default, all statuses are included
 
 =item C<asset_class> - Defaults to C<us_equity>
 
@@ -461,11 +487,11 @@ found, an empty list is retured.
 
 =head2 C<bars( ... )>
 
-    my $bars = $camelid->bars(
+  my $bars = $camelid->bars(
         symbol    => 'MSFT',
         timeframe => '1Min',
-        start     => Time::Moment->now->with_day_of_week(2),
-        end       => Time::Moment->now->with_hour(12)->with_day_of_week(3)
+        start     => Time::Moment->now->with_hour(10),
+        end       => Time::Moment->now->minus_minutes(20)
     );
 
 Returns a list of Finance::Alpaca::Struct::Bar objects along with other data.
@@ -505,9 +531,9 @@ The data returned includes the following data:
 =head2 C<quotes( ... )>
 
     my $quotes = $camelid->quotes(
-        symbol    => 'MSFT',
-        start     => Time::Moment->now->with_day_of_week(2),
-        end       => Time::Moment->now->with_hour(12)->with_day_of_week(3)
+        symbol => 'MSFT',
+        start  => Time::Moment->now->with_hour(10),
+        end    => Time::Moment->now->minus_minutes(20)
     );
 
 Returns a list of Finance::Alpaca::Struct::Quote objects along with other data.
@@ -546,9 +572,9 @@ The data returned includes the following data:
 =head2 C<trades( ... )>
 
     my $trades = $camelid->trades(
-        symbol    => 'MSFT',
-        start     => Time::Moment->now->with_day_of_week(2),
-        end       => Time::Moment->now->with_hour(12)->with_day_of_week(3)
+        symbol => 'MSFT',
+        start  => Time::Moment->now->with_hour(10),
+        end    => Time::Moment->now->minus_minutes(20)
     );
 
 Returns a list of Finance::Alpaca::Struct::Trade objects along with other data.
@@ -734,11 +760,11 @@ The following parameters are accepted:
 
 =head2 C<replace_order( ..., ... )>
 
-    my $new_order = $camelid->reaplace_order(
+    my $new_order = $camelid->replace_order(
         $order->id,
-        qty => 3,
-        time_in_force => 'fok'
-        limit_price => 120
+        qty           => 1,
+        time_in_force => 'fok',
+        limit_price   => 120
     );
 
 Replaces a single order with updated parameters. Each parameter overrides the
@@ -815,7 +841,7 @@ cancel request, it returns status 204 and a true value.
 Retrieves a list of the account’s open positions and returns a list of
 Finance::Alpaca::Struct::Positon objects.
 
-=head2 C<positon( ... )>
+=head2 C<position( ... )>
 
     my $elon = $camelid->position( 'TSLA' );
     my $msft = $camelid->position( 'b6d1aa75-5c9c-4353-a305-9e2caa1925ab' );
