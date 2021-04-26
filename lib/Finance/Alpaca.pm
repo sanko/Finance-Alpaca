@@ -1,4 +1,4 @@
-package Finance::Alpaca 1.00 {
+package Finance::Alpaca 0.9900 {
     use strictures 2;
     use Moo;
     use feature 'signatures';
@@ -1043,7 +1043,3 @@ conditions may apply to data transmitted through this module.
 Sanko Robinson E<lt>sanko@cpan.orgE<gt>
 
 =cut
-
-#TODO:
-# https://alpaca.markets/docs/api-documentation/api-v2/account-activities/
-#

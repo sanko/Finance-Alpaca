@@ -1,4 +1,4 @@
-package Finance::Alpaca::Struct::Clock 1.00 {
+package Finance::Alpaca::Struct::Clock 0.9900 {
     use strictures 2;
     use feature 'signatures';
     no warnings 'experimental::signatures';

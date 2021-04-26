@@ -68,7 +68,7 @@
          "web" : "https://github.com/sanko/Finance-Alpaca"
       }
    },
-   "version" : "1.00",
+   "version" : "0.9900",
    "x_authority" : "cpan:SANKO",
    "x_serialization_backend" : "JSON::PP version 4.05",
    "x_static_install" : 1

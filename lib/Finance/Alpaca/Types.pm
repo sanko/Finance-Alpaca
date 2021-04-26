@@ -1,4 +1,4 @@
-package Finance::Alpaca::Types 1.00 {
+package Finance::Alpaca::Types 0.9900 {
     use strictures 2;
     use Type::Library -base;
     use Types::Standard -types;

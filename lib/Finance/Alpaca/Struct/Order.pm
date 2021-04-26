@@ -1,4 +1,4 @@
-package Finance::Alpaca::Struct::Order 1.00 {
+package Finance::Alpaca::Struct::Order 0.9900 {
     use strictures 2;
     use feature 'signatures';
     no warnings 'experimental::signatures';
