@@ -42,9 +42,11 @@
       },
       "runtime" : {
          "requires" : {
+            "Mojo::Promise" : "0",
             "Mojo::UserAgent" : "0",
+            "Moo" : "0",
             "Time::Moment" : "0",
-            "Types::Standard" : "0",
+            "Types::Standard" : "1.006",
             "Types::UUID" : "0",
             "perl" : "5.022",
             "strictures" : "2"
