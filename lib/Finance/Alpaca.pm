@@ -1,4 +1,4 @@
-package Finance::Alpaca 0.9901 {
+package Finance::Alpaca 0.9902 {
     use strictures 2;
     use Moo;
     use feature 'signatures';
