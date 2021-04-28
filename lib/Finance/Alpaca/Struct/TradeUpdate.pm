@@ -171,6 +171,8 @@ conditions may apply to data transmitted through this module.
 
 Sanko Robinson E<lt>sanko@cpan.orgE<gt>
 
+=for stopwords lifespan
+
 =cut
 
 # https://alpaca.markets/docs/api-documentation/api-v2/account-activities/
