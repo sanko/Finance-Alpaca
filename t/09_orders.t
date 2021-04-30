@@ -47,8 +47,10 @@ SKIP: {
         is( $order->replaced_by,    $replacement->id, 'Order replaced' );
         is( $replacement->replaces, $order->id,       'Both sides have references' );
         ok( $alpaca->cancel_order( $replacement->id ), 'Cancel replacement' );
-        like( $alpaca->order_by_id( $replacement->id )->status,
-            qr[^canceled|pending_cancel$], 'Canceled order status is correct' );
+        like(
+            $alpaca->order_by_id( $replacement->id )->status,
+            qr[^canceled|pending_cancel$], 'Canceled order status is correct'
+        );
     }
 }
 #
