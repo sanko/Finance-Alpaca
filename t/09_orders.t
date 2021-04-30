@@ -10,7 +10,6 @@ my $alpaca = Finance::Alpaca->new(
 
 # Count our unexecuted orders
 my $tally = scalar $alpaca->orders( status => 'open' );
-
 # Next, create an order that will likely never execute
 my $order = $alpaca->create_order(
     symbol          => 'MSFT',
@@ -19,10 +18,13 @@ my $order = $alpaca->create_order(
     type            => 'limit',
     limit_price     => 1,
     time_in_force   => 'gtc',
-    client_order_id => 'test order #' . int rand time
+    client_order_id => 'test order #' . Time::HiRes::time()
 );
 SKIP: {
     diag $order;
+    use Data::Dumper;
+    diag Dumper($order);
+
     skip 'Failed to place an order! Race cond likely' unless $order;
     isa_ok( $order, 'Finance::Alpaca::Struct::Order' );
     my @orders = $alpaca->orders( status => 'open' );
