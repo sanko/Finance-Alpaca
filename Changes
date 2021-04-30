@@ -2,6 +2,10 @@ Revision history for Perl extension Finance-Alpaca
 
 {{$NEXT}}
 
+0.9903 2021-04-30T15:31:22Z
+
+    - Test suite! Might fail due to race cond between API limits and multiple smokers
+
 0.9902 2021-04-28T17:16:19Z
 
     - Minor documentation updates
