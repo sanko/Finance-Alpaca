@@ -121,14 +121,16 @@ package Finance::Alpaca 0.9902 {
             $_ . '='
                 . ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
         } keys %params if keys %params;
-        return (
-            Dict [ quotes => ArrayRef [Quote], symbol => Str, next_page_token => Maybe [Str] ] )
-            ->assert_coerce(
-            $s->ua->get(
-                sprintf 'https://data.alpaca.markets/v%d/stocks/%s/quotes%s',
-                $s->api_version, $symbol, $params
-            )->result->json
-            );
+        my $res = $s->ua->get(
+            sprintf 'https://data.alpaca.markets/v%d/stocks/%s/quotes%s',
+            $s->api_version, $symbol, $params
+        )->result;
+        return $res->is_error ? $res->json : (
+            ( next_page_token => $res->json->{next_page_token} ),
+            map { delete $_->{symbol} => delete $_->{quotes} } (
+                Dict [ quotes => ArrayRef [Quote], symbol => Str, next_page_token => Maybe [Str] ]
+            )->assert_coerce( $res->json )
+        );
     }
 
     sub trades ( $s, %params ) {
@@ -138,14 +140,17 @@ package Finance::Alpaca 0.9902 {
             $_ . '='
                 . ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
         } keys %params if keys %params;
-        return (
-            Dict [ trades => ArrayRef [Trade], symbol => Str, next_page_token => Maybe [Str] ] )
-            ->assert_coerce(
-            $s->ua->get(
-                sprintf 'https://data.alpaca.markets/v%d/stocks/%s/trades%s',
-                $s->api_version, $symbol, $params
-            )->result->json
-            );
+
+        my $res = $s->ua->get(
+            sprintf 'https://data.alpaca.markets/v%d/stocks/%s/trades%s',
+            $s->api_version, $symbol, $params
+        )->result;
+        return $res->is_error ? $res->json : (
+            ( next_page_token => $res->json->{next_page_token} ),
+            map { delete $_->{symbol} => delete $_->{trades} } (
+                Dict [ trades => ArrayRef [Trade], symbol => Str, next_page_token => Maybe [Str] ]
+            )->assert_coerce( $res->json )
+        );
     }
 
     sub trade_stream ( $s, $cb, %params ) {
@@ -499,7 +504,7 @@ found, an empty list is returned.
         start     => Time::Moment->now->with_hour(10),
         end       => Time::Moment->now->minus_minutes(20)
     );
- 
+
 Returns a list of L<Finance::Alpaca::Struct::Bar> objects along with other
 data.
 
@@ -528,7 +533,7 @@ symbol as well as a C<next_page_token> for pagination if applicable.
 
 =head2 C<quotes( ... )>
 
-    my $quotes = $camelid->quotes(
+    my %quotes = $camelid->quotes(
         symbol => 'MSFT',
         start  => Time::Moment->now->with_hour(10),
         end    => Time::Moment->now->minus_minutes(20)
@@ -556,21 +561,12 @@ The following parameters are accepted:
 
 =back
 
-The data returned includes the following data:
-
-=over
-
-=item C<quotes> - List of L<Finance::Alpaca::Struct::Quote> objects
-
-=item C<next_page_token> - Token that can be used to query the next page
-
-=item C<symbol> - Symbol that was queried
-
-=back
+The method returns a hash reference with quote data included as a list under
+the symbol as well as a C<next_page_token> for pagination if applicable.
 
 =head2 C<trades( ... )>
 
-    my $trades = $camelid->trades(
+    my %trades = $camelid->trades(
         symbol => 'MSFT',
         start  => Time::Moment->now->with_hour(10),
         end    => Time::Moment->now->minus_minutes(20)
@@ -598,17 +594,9 @@ The following parameters are accepted:
 
 =back
 
-The data returned includes the following data:
+The method returns a hash reference with trade data included as a list under
+the symbol as well as a C<next_page_token> for pagination if applicable.
 
-=over
-
-=item C<trades> - List of L<Finance::Alpaca::Struct::Quote> objects
-
-=item C<next_page_token> - Token that can be used to query the next page
-
-=item C<symbol> - Symbol that was queried
-
-=back
 
 =head2 C<trade_stream( ... )>
 
