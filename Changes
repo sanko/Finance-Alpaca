@@ -2,6 +2,9 @@ Revision history for Perl extension Finance-Alpaca
 
 {{$NEXT}}
 
+    - Fixed race conditions in 09_orders.t
+    - Test websockets (only when the market is open)
+
 0.9903 2021-04-30T15:31:22Z
 
     - Test suite! Might fail due to race cond between API limits and multiple smokers

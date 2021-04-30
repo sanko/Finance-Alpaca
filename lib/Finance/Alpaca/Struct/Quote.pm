@@ -14,7 +14,7 @@ package Finance::Alpaca::Struct::Quote 0.9902 {
     use lib './lib';
     use Finance::Alpaca::Types;
     has timestamp => ( is => 'ro', isa => Timestamp, required => 1, coerce => 1, init_arg => 't' );
-    has ask          => ( is => 'ro', isa => Str, required => 1, init_arg => 'ax' );
+    has ask_exchange => ( is => 'ro', isa => Str, required => 1, init_arg => 'ax' );
     has ask_price    => ( is => 'ro', isa => Str, required => 1, init_arg => 'ap' );
     has ask_size     => ( is => 'ro', isa => Str, required => 1, init_arg => 'as' );
     has bid_exchange => ( is => 'ro', isa => Str, required => 1, init_arg => 'bx' );
@@ -58,13 +58,13 @@ The following properties are contained in the object.
 
 =item C<timestamp> - Timestamp with nanosecond precision as a Time::Moment object
 
-=item C<ask> - Ask exchange
+=item C<ask_exchaneg> - Ask exchange
 
 =item C<ask_price> - Ask price
 
 =item C<ask_size> - Ask size
 
-=item C<bx> - Bid exchange
+=item C<bid_exchange> - Bid exchange
 
 =item C<bid_price> - Bid price
 
