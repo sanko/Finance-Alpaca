@@ -285,8 +285,9 @@ package Finance::Alpaca 0.9902 {
     }
 
     sub watchlists ($s) {
-        return ( ArrayRef [Watchlist] )
-            ->assert_coerce( $s->ua->get( $s->endpoint . '/v2/watchlists' )->result->json );
+        return
+            @{ ( ArrayRef [Watchlist] )
+                ->assert_coerce( $s->ua->get( $s->endpoint . '/v2/watchlists' )->result->json ) };
     }
 
     sub create_watchlist ( $s, $name, @symbols ) {
