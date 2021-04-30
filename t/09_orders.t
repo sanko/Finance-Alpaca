@@ -10,19 +10,20 @@ my $alpaca = Finance::Alpaca->new(
 
 # Count our unexecuted orders
 my $tally = scalar $alpaca->orders( status => 'open' );
-{
-    my $todo = todo 'race cond issue with multiple smokers running';
 
-    # Next, create an order that will likely never execute
-    my $order = $alpaca->create_order(
-        symbol          => 'MSFT',
-        qty             => 1,
-        side            => 'buy',
-        type            => 'limit',
-        limit_price     => 1,
-        time_in_force   => 'gtc',
-        client_order_id => 'test order #' . int rand(time)
-    );
+# Next, create an order that will likely never execute
+my $order = $alpaca->create_order(
+    symbol          => 'MSFT',
+    qty             => 1,
+    side            => 'buy',
+    type            => 'limit',
+    limit_price     => 1,
+    time_in_force   => 'gtc',
+    client_order_id => 'test order #' . int rand time
+);
+SKIP: {
+    diag $order;
+    skip 'Failed to place an order! Race cond likely' unless $order;
     isa_ok( $order, 'Finance::Alpaca::Struct::Order' );
     my @orders = $alpaca->orders( status => 'open' );
 
@@ -47,7 +48,7 @@ my $tally = scalar $alpaca->orders( status => 'open' );
         $alpaca->order_by_id( $replacement->id )->status,
         'canceled', 'Canceled order status is correct'
     );
-};
+}
 #
 done_testing;
 1;
