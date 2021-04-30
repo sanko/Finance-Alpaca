@@ -291,12 +291,12 @@ Overview|https://alpaca.markets/docs/trading-on-alpaca/orders/#trailing-stop-ord
 If you’d like to see a list of your existing orders, you can send a get
 request for that!
 
-    my $closed_orders = $alpaca->orders(
+    my @closed_orders = $alpaca->orders(
         status => 'closed',
         limit  => 100,
         nested => 1
     );
-    my @closed_aapl_orders = grep { $_->symbol eq 'AAPL' } @$closed_orders;
+    my @closed_aapl_orders = grep { $_->symbol eq 'AAPL' } @closed_orders;
 
 =head2 Listen for Updates to Orders
 

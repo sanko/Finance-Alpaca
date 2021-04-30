@@ -227,7 +227,7 @@ data.
 
 ## `orders( [...] )`
 
-    my $orders = $camelid->orders( status => 'open' );
+    my @orders = $camelid->orders( status => 'open' );
 
 Returns a list of [Finance::Alpaca::Struct::Order](https://metacpan.org/pod/Finance%3A%3AAlpaca%3A%3AStruct%3A%3AOrder) objects.
 

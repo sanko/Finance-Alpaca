@@ -135,15 +135,14 @@ package Finance::Alpaca 0.9902 {
 
     sub trades ( $s, %params ) {
         my $symbol = delete $params{symbol};
-        my $params = '';
-        $params .= '?' . join '&', map {
-            $_ . '='
-                . ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
-        } keys %params if keys %params;
-
+        for ( keys %params ) {
+            $params{$_} = $params{$_}->to_string() if ref $params{$_} eq 'Time::Moment';
+        }
         my $res = $s->ua->get(
-            sprintf 'https://data.alpaca.markets/v%d/stocks/%s/trades%s',
-            $s->api_version, $symbol, $params
+            sprintf(
+                'https://data.alpaca.markets/v%d/stocks/%s/trades',
+                $s->api_version, $symbol
+            ) => form => {%params}
         )->result;
         return $res->is_error ? $res->json : (
             ( next_page_token => $res->json->{next_page_token} ),
@@ -179,24 +178,29 @@ package Finance::Alpaca 0.9902 {
     }
 
     sub orders ( $s, %params ) {
-        my $params = '';
-        $params .= '?' . join '&', map {
-            $_ . '='
-                . ( ref $params{$_} eq 'Time::Moment' ? $params{$_}->to_string() : $params{$_} )
-        } keys %params if keys %params;
-        return ( ArrayRef [Order] )
-            ->assert_coerce( $s->ua->get( $s->endpoint . '/v2/orders' . $params )->result->json );
+        for ( keys %params ) {
+            $params{$_} = $params{$_}->to_string() if ref $params{$_} eq 'Time::Moment';
+        }
+        return @{
+            ( ArrayRef [Order] )->assert_coerce(
+                $s->ua->get( $s->endpoint . '/v2/orders' => form => {%params} )->result->json
+            )
+        };
     }
 
     sub order_by_id ( $s, $order_id, $nested = 0 ) {
-        my $res = $s->ua->get(
-            $s->endpoint . '/v2/orders/' . $order_id . ( $nested ? '?nested=1' : '' ) )->result;
+        my $res
+            = $s->ua->get(
+            $s->endpoint . '/v2/orders/' . $order_id => form => ( $nested ? { nested => 1 } : () ) )
+            ->result;
         return $res->is_error ? () : to_Order( $res->json );
     }
 
     sub order_by_client_id ( $s, $order_id ) {
-        my $res = $s->ua->get(
-            $s->endpoint . '/v2/orders:by_client_order_id?client_order_id=' . $order_id )->result;
+        my $res
+            = $s->ua->get( $s->endpoint
+                . '/v2/orders:by_client_order_id' => form => { client_order_id => $order_id } )
+            ->result;
         return $res->is_error ? () : to_Order( $res->json );
     }
 
@@ -629,7 +633,7 @@ data.
 
 =head2 C<orders( [...] )>
 
-    my $orders = $camelid->orders( status => 'open' );
+    my @orders = $camelid->orders( status => 'open' );
 
 Returns a list of L<Finance::Alpaca::Struct::Order> objects.
 
