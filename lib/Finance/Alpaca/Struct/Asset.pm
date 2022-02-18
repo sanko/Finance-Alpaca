@@ -16,7 +16,7 @@ package Finance::Alpaca::Struct::Asset 0.9902 {
     use Finance::Alpaca::Types;
     has id                 => ( is => 'ro', isa => Uuid, required => 1 );
     has [qw[class symbol]] => ( is => 'ro', isa => Str,  required => 1 );
-    has exchange           =>
+    has exchange =>
         ( is => 'ro', isa => Enum [qw[AMEX ARCA BATS NYSE NASDAQ NYSEARCA OTC]], required => 1 );
     has status => ( is => 'ro', isa => Enum [qw[active inactive]], required => 1 );
     has [qw[easy_to_borrow fractionable marginable shortable tradable]] =>

@@ -20,17 +20,17 @@ package Finance::Alpaca::Struct::Order 0.9902 {
     has [qw[updated_at submitted_at filled_at expired_at canceled_at failed_at replaced_at]] =>
         ( is => 'ro', isa => Maybe [Timestamp], predicate => 1, coerce => 1 );
     has [qw[replaced_by replaces]] => ( is => 'ro', isa => Maybe [Uuid], predicate => 1 );
-    has [qw[symbol asset_class]]   => ( is => 'ro', isa => Str, required => 1 );    # If from stream
+    has [qw[symbol asset_class]] => ( is => 'ro', isa => Str, required => 1 );    # If from stream
     has [qw[notional qty filled_avg_price limit_price stop_price trail_percent trail_price hwm]] =>
         ( is => 'ro', isa => Maybe [Num], predicate => 1 );
-    has filled_qty  => ( is => 'ro', isa => Num, required => 1 );
+    has filled_qty => ( is => 'ro', isa => Num, required => 1 );
     has order_class =>
         ( is => 'ro', isa => Enum [ '', qw[simple bracket oco oto] ], required => 1 );
     has type =>
         ( is => 'ro', isa => Enum [qw[market limit stop stop_limit trailing_stop]], required => 1 );
     has side          => ( is => 'ro', isa => Enum [qw[buy sell]],                required => 1 );
     has time_in_force => ( is => 'ro', isa => Enum [qw[day gtc opg cls ioc fok]], required => 1 );
-    has status        => (
+    has status => (
         is  => 'ro',
         isa => Enum [
             qw[new partially_filled filled done_for_day canceled expired replaced pending_cancel pending_replace accepted pending_new accepted_for_bidding stopped rejected suspended calculated held]

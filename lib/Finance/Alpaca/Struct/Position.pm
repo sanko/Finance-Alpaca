@@ -16,7 +16,7 @@ package Finance::Alpaca::Struct::Position 0.9902 {
     use Finance::Alpaca::Types;
     has asset_id                 => ( is => 'ro', isa => Uuid, required => 1 );
     has [qw[asset_class symbol]] => ( is => 'ro', isa => Str,  required => 1 );
-    has exchange                 =>
+    has exchange =>
         ( is => 'ro', isa => Enum [qw[AMEX ARCA BATS NYSE NASDAQ NYSEARCA OTC]], required => 1 );
 
     has [

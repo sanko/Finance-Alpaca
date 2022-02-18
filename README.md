@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/sanko/Finance-Alpaca.svg?branch=master)](https://travis-ci.com/sanko/Finance-Alpaca) [![MetaCPAN Release](https://badge.fury.io/pl/Finance-Alpaca.svg)](https://metacpan.org/release/Finance-Alpaca)
+[![Actions Status](https://github.com/sanko/Finance-Alpaca/actions/workflows/linux.yaml/badge.svg)](https://github.com/sanko/Finance-Alpaca/actions/workflows/linux.yaml) [![Actions Status](https://github.com/sanko/Finance-Alpaca/actions/workflows/windows.yaml/badge.svg)](https://github.com/sanko/Finance-Alpaca/actions/workflows/windows.yaml) [![Actions Status](https://github.com/sanko/Finance-Alpaca/actions/workflows/osx.yaml/badge.svg)](https://github.com/sanko/Finance-Alpaca/actions/workflows/osx.yaml) [![Actions Status](https://github.com/sanko/Finance-Alpaca/actions/workflows/freebsd.yaml/badge.svg)](https://github.com/sanko/Finance-Alpaca/actions/workflows/freebsd.yaml) [![MetaCPAN Release](https://badge.fury.io/pl/Finance-Alpaca.svg)](https://metacpan.org/release/Finance-Alpaca)
 # NAME
 
 Finance::Alpaca - Perl Wrapper for Alpaca's Commission-free Stock Trading API
