@@ -31,8 +31,8 @@ is(
 
 isa_ok( $bars{MSFT}[0], 'Finance::Alpaca::Struct::Bar' );
 is(
-    $bars{MSFT}[0]->timestamp->to_string, '2021-04-22T15:05:00Z',
-    'Page 2 starts with 2021-04-22T15:05:00Z'
+    $bars{MSFT}[0]->timestamp->to_string, '2021-04-22T15:01:00Z',
+    'Page 2 starts with 2021-04-22T15:01:00Z'
 );
 
 done_testing;

@@ -23,9 +23,11 @@ package Finance::Alpaca::Struct::Account 0.9902 {
         qw[buying_power cash daytrading_buying_power equity initial_margin last_equity last_maintenance_margin long_market_value maintenance_margin portfolio_value regt_buying_power short_market_value]
     ] => ( is => 'ro', isa => Num, required => 1 );
     has created_at => ( is => 'ro', isa => Timestamp, required => 1, coerce => 1 );
-    has currency                            => ( is => 'ro', isa => Str, required => 1 );
-    has [qw[daytrade_count multiplier sma]] => ( is => 'ro', isa => Int, required => 1 );
-    has status                              => (
+    has currency   => ( is => 'ro', isa => Str,       required => 1 );
+    has sma        => ( is => 'ro', isa => Num,       required => 1 );
+
+    has [qw[daytrade_count multiplier]] => ( is => 'ro', isa => Int, required => 1 );
+    has status => (
         is  => 'ro',
         isa => Enum [
             qw[ACTIVE ACCOUNT_UPDATED APPROVAL_PENDING ONBOARDING REJECTED SUBMITTED SUBMISSION_FAILED]
